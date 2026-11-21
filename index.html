@@ -158,6 +158,7 @@ header.solid .burger{background:var(--bg)} header.solid .burger span{background:
 .pc h3{font-size:19px;line-height:1.25;margin:4px 0 6px}
 .pc .loc{font-size:13px;color:#c5d3ea;display:flex;gap:6px;align-items:center}
 .pc .loc svg{width:14px;height:14px}
+.pc .by{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:#0a2350;background:#9fe8c9;border-radius:999px;padding:3px 10px}
 .pc .bar{height:4px;border-radius:4px;background:rgba(255,255,255,.2);margin-top:10px;overflow:hidden}
 .pc .bar b{display:block;height:100%;background:linear-gradient(90deg,var(--sky),var(--mint))}
 .more{text-align:center;margin-top:30px}
@@ -274,6 +275,14 @@ footer .brand b{color:#fff}
 }
 @media (max-width:600px){.svc-grid,.pgrid,.fleet-grid,.steps{grid-template-columns:1fr}footer .cols{grid-template-columns:1fr}.tabs button{padding:10px 14px;font-size:13.5px}}
 @media (prefers-reduced-motion:reduce){.hero .bg,.hero::after,.marquee .track{animation:none}}
+.clients{padding:46px 0 10px;background:#fff}
+.cl-h{text-align:center;font-family:Rajdhani,sans-serif;font-weight:700;letter-spacing:.22em;text-transform:uppercase;font-size:13px;color:#7a879c;margin:0 0 18px}
+.cl-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.cl{border:1px solid #e3e9f3;border-radius:14px;padding:14px 16px;background:linear-gradient(180deg,#fbfcff,#f3f6fb);transition:transform .2s,box-shadow .2s}
+.cl:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(10,35,80,.08)}
+.cl b{display:block;font-size:17px;color:#0a2350;letter-spacing:.01em}
+.cl span{font-size:12.5px;color:#617089}
+@media (max-width:760px){.cl-row{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -334,9 +343,9 @@ footer .brand b{color:#fff}
   <div class="scroll-cue"></div>
   <div class="hero-stats"><div class="wrap"><div class="row">
     <div class="hs reveal in"><b>Since 2019</b><span>Naharlagun, Arunachal</span></div>
-    <div class="hs reveal in"><b>62+</b><span>Projects delivered &amp; ongoing</span></div>
+    <div class="hs reveal in"><b>60+</b><span>Projects delivered &amp; ongoing</span></div>
     <div class="hs reveal in"><b>5 States</b><span>Arunachal · Assam · Meghalaya · Manipur · Chhattisgarh</span></div>
-    <div class="hs reveal in"><b>200+ km</b><span>Highway corridors LiDAR-surveyed</span></div>
+    <div class="hs reveal in"><b>250+ km</b><span>Road &amp; highway corridors LiDAR-surveyed</span></div>
   </div></div></div>
 </section>
 
@@ -345,13 +354,28 @@ footer .brand b{color:#fff}
   <span>Drone Survey</span><span>LiDAR Mapping</span><span>DGPS Control</span><span>Road Design &amp; DPR</span><span>Architecture</span><span>Structural Design</span><span>Water Supply</span><span>Construction</span><span>Government Supply</span>
 </div></div>
 
+<section class="clients" aria-label="Clients and funding agencies">
+  <div class="wrap">
+    <p class="cl-h">Trusted on projects for</p>
+    <div class="cl-row">
+      <div class="cl"><b>World Bank</b><span>Funded road project · Assam</span></div>
+      <div class="cl"><b>BRO</b><span>Border Roads Organisation</span></div>
+      <div class="cl"><b>NHIDCL</b><span>National highways · sub-contract</span></div>
+      <div class="cl"><b>NEEPCO</b><span>Hydro power · Hoj</span></div>
+      <div class="cl"><b>PWD</b><span>Govt. of Arunachal Pradesh</span></div>
+      <div class="cl"><b>UD &amp; Housing</b><span>Govt. of Arunachal Pradesh</span></div>
+      <div class="cl"><b>WRD</b><span>Water Resources Dept.</span></div>
+      <div class="cl"><b>Education Dept.</b><span>Schools · DIET</span></div>
+    </div>
+  </div>
+</section>
 <section class="about" id="about">
   <div class="wrap grid">
     <div class="collage reveal">
       <div class="ph a"><img src="img/tn_nafra2_t.jpg" alt="Survey team with GNSS rover in the hills" loading="lazy"></div>
       <div class="ph b"><img src="img/tn_ying4_t.jpg" alt="Drone view of a river valley and road" loading="lazy"></div>
       <div class="ph c"><img src="img/lee_nyapin_interior_t.jpg" alt="3D interior layout of PWD office, Nyapin" loading="lazy"></div>
-      <div class="badge"><b>38+</b><span>projects across<br>5 states</span></div>
+      <div class="badge"><b>60+</b><span>projects across<br>5 states</span></div>
     </div>
     <div class="reveal">
       <span class="eyebrow">About Lee Enterprise</span>
@@ -559,10 +583,10 @@ const P=[
  // ---- T.N Consultant (supervised) ----
  {f:'tn',simple:1,cat:'survey',tag:'LiDAR · DPR · 200 km',title:'LiDAR Survey for NH-30 Four-Laning (Keshloor–Konta)',place:'Chhattisgarh · Package-7',status:'Completed',desc:'Consultancy LiDAR survey for the Detailed Project Report of NH-30 upgradation to four lanes from Keshloor to Konta — about 200 km of highway corridor.',imgs:['tn_nh3','tn_nh1']},
  {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Hydrology',title:'LiDAR & Hydrological Survey for Dam Construction',place:'Rhinkuri, Mao, Manipur',status:'Data processing',desc:'LiDAR survey supporting dam construction and hydrological studies, with Manipur Geomatic Pvt. Ltd., WRD officials, hydraulic experts and the local community.',imgs:['n_manipur','tn_dam1','tn_dam3','tn_dam2']},
- {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway Corridor, Yingkiong',place:'Upper Siang, Arunachal Pradesh',status:'Completed',desc:'Drone LiDAR survey of a mountain highway corridor through dense forest and river valleys.',imgs:['tn_ying2','tn_ying1','tn_ying3','tn_ying4']},
- {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway, Parshuram Kund',place:'Tezu, Lohit, Arunachal Pradesh',status:'Completed',desc:'Highway corridor LiDAR survey with processed orthomosaic of the valley.',imgs:['tn_parsh1','tn_parsh2','tn_parsh3']},
- {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'Survey for Highway at Nafra',place:'West Kameng, Arunachal Pradesh',status:'Completed',desc:'LiDAR and GNSS survey of a highway corridor through steep, vegetated terrain.',imgs:['tn_nafra2','tn_nafra4','tn_nafra3','tn_nafra1']},
- {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway at Jowai',place:'West Jaintia Hills',status:'Completed',desc:'Highway corridor LiDAR survey with GNSS-tagged ground control.',imgs:['tn_jowai1']},
+ {f:'tn',simple:1,by:'NHIDCL · Sub-contract',cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway Corridor, Yingkiong',place:'Upper Siang, Arunachal Pradesh',status:'Completed',desc:'Drone LiDAR survey of a mountain highway corridor through dense forest and river valleys.',imgs:['tn_ying2','tn_ying1','tn_ying3','tn_ying4']},
+ {f:'tn',simple:1,by:'NHIDCL · Sub-contract',cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway, Parshuram Kund',place:'Tezu, Lohit, Arunachal Pradesh',status:'Completed',desc:'Highway corridor LiDAR survey with processed orthomosaic of the valley.',imgs:['tn_parsh1','tn_parsh2','tn_parsh3']},
+ {f:'tn',simple:1,by:'NHIDCL · Sub-contract',cat:'survey',tag:'LiDAR · Highway',title:'Survey for Highway at Nafra',place:'West Kameng, Arunachal Pradesh',status:'Completed',desc:'LiDAR and GNSS survey of a highway corridor through steep, vegetated terrain.',imgs:['tn_nafra2','tn_nafra4','tn_nafra3','tn_nafra1']},
+ {f:'tn',simple:1,by:'NHIDCL · Sub-contract',cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway at Jowai',place:'West Jaintia Hills',status:'Completed',desc:'Highway corridor LiDAR survey with GNSS-tagged ground control.',imgs:['tn_jowai1']},
  {f:'tn',simple:1,cat:'infra',tag:'Master Plan · DGPS',title:'Tato-II Hydroelectric Project — Colony Planning',place:'Tato, Shi-Yomi, Arunachal Pradesh',status:'Completed',desc:'DGPS survey of about 16 hectares at 1,240 m above MSL; contour and topography maps, colony master plan, landscaping, drainage and infrastructure design.',imgs:['r_tato1','r_tato2','r_tato3','tn_pf1','tn_tato3','tn_tato1','tn_tato4']},
  {f:'tn',simple:1,cat:'building',tag:'Hospitality · Commercial',title:'Rooftop Café',place:'Model Village, Naharlagun',status:'Completed',desc:'Rooftop café with main seating, stage area, reception, kitchen, staff room, store and toilets — plan and 3D renders.',imgs:['tn_cafe2','tn_cafe1','tn_cafe3']},
  {f:'tn',simple:1,cat:'building',tag:'Survey · Concept Plan',title:'VIP Guest House & Inspection Bungalow',place:'Potin, Keyi Panyor, Arunachal Pradesh',status:'Completed',desc:'Detailed survey and concept plan: VIP guest house, staff barrack, inspection bungalow, garden, parking and gates.',imgs:['tn_vip2','tn_vip1','tn_vip3']},
@@ -581,7 +605,7 @@ const P=[
  {f:'lee',simple:1,cat:'infra',simple:1,title:'NEEPCO Hoj — Approach & Exit Road with 17.5 m RCC Wall',place:'Hoj, Papum Pare',imgs:['n_hoj','d_hoj_cs']},
  {f:'tn',simple:1,cat:'infra',simple:1,title:'Palin Town Storm-Water Drainage & Watershed Plan',place:'Palin, Kra Daadi',imgs:['n_palin_ws','n_palin_cs','d_palin_drop']},
  {f:'lee',simple:1,cat:'survey',title:'Drone Surveys for Urban Development Projects',place:'Itanagar, Nirjuli & Lekhi',imgs:['lee_udplot','n_ud_dk','n_ud_bpl','n_ud_gh']},
- {f:'lee',simple:1,cat:'survey',title:'LiDAR Survey at Jang, Tawang',place:'Jang, Tawang, Arunachal Pradesh',imgs:['n_tawang']},
+ {f:'lee',simple:1,by:'Border Roads Organisation (BRO)',cat:'survey',title:'LiDAR Road Survey — Jang, Tawang',place:'Jang, Tawang, Arunachal Pradesh',imgs:['n_tawang']},
  {f:'lee',simple:1,cat:'survey',title:'Site Survey, Bath Village',place:'Bath Village, Papum Pare',imgs:['n_bath','n_bath_air']},
  {f:'lee',simple:1,cat:'survey',title:'Contour Mapping, Vivek Vihar & D-Sector',place:'Itanagar',imgs:['n_vivek_map','n_vivek_loc','n_dsector']},
  {f:'lee',simple:1,cat:'survey',title:'LiDAR 3D Site Model, Borang',place:'Arunachal Pradesh',imgs:['n_ronnie','n_ronnie2']},
@@ -591,7 +615,6 @@ const P=[
  {f:'lee',simple:1,cat:'building',simple:1,title:'DIET Centre of Excellence — Campus Design',place:'Arunachal Pradesh',imgs:['r_diet1','r_diet2','n_diet']},
  {f:'lee',simple:1,cat:'building',simple:1,title:'Multipurpose Hall — Drawings & Compliance',place:'Arunachal Pradesh',imgs:['n_hall']},
  {f:'tn',simple:1,cat:'infra',simple:1,title:'RCC Retaining Walls, Abotani Colony & 6-Kilo',place:'Itanagar',imgs:['n_rwall']},
- {f:'lee',simple:1,cat:'infra',title:'Road Alignment, Lungsa – Payu Village',place:'Lungsa – Payu, Arunachal Pradesh',imgs:['n_lungsa2','n_lungsa']},
  {f:'lee',simple:1,cat:'building',title:'G+5 Residential Building',place:'Lekhi, Naharlagun',imgs:['r_kl2','r_kl1']},
  {f:'lee',simple:1,cat:'building',title:'Residential Building G+4 (G+7 provision)',place:'Arunachal Pradesh',imgs:['r_tt1','r_tt2']},
  {f:'lee',simple:1,cat:'building',title:'Modern Residence with Landscaped Driveway',place:'Arunachal Pradesh',imgs:['r_ll1','r_ll2']},
@@ -613,7 +636,9 @@ const P=[
  {f:'lee',simple:1,cat:'building',title:'Women\u2019s Hostel',place:'Arunachal Pradesh',imgs:['v_wh1','v_wh2']},
  {f:'lee',simple:1,cat:'building',title:'Modern Residence with Rooftop Pool',place:'Arunachal Pradesh',imgs:['v_tig1','v_tig2']},
  {f:'lee',simple:1,cat:'building',title:'Two-Storey Residence — Elevation Design',place:'Arunachal Pradesh',imgs:['lee_tarh1','lee_tarh2']},
- {f:'tn',simple:1,cat:'infra',title:'Cemetery Development — Alignment, Drain & L-Section',place:'Chimpu, Itanagar',imgs:['c_cem_ls','c_cem_key','c_cem_al']}
+ {f:'tn',simple:1,cat:'infra',title:'Cemetery Development — Alignment, Drain & L-Section',place:'Chimpu, Itanagar',imgs:['c_cem_ls','c_cem_key','c_cem_al']},
+ {f:'lee',simple:1,by:'Border Roads Organisation (BRO)',cat:'survey',title:'LiDAR Road Survey — Mandala',place:'Mandala, West Kameng, Arunachal Pradesh',art:'survey'},
+ {f:'lee',simple:1,by:'World Bank-funded project',cat:'survey',title:'LiDAR Road Survey — Haflong',place:'Haflong, Dima Hasao, Assam',art:'survey'}
 ];
 const FIELD=[['tn_nafra1','Survey team, Nafra'],['tn_dam1','Briefing with WRD, Manipur'],['tn_ying4','LiDAR flight, Upper Siang',1],['tn_nh3','NH-30 base station, Chhattisgarh'],['tn_jowai1','Ground control, Jowai'],['tn_dam3','Recce, Mao',1],['tn_nafra3','Corridor walk, West Kameng',1],['tn_tato4','DGPS base, Tato',1],['tn_dam2','Field camp, Rhinkuri'],['tn_parsh2','Valley mapping, Tezu'],['tn_about1','Stadium concept'],['tn_about2','Residence render']];
 const ART={
@@ -633,7 +658,7 @@ function card(p,i){
   const done=/complete/i.test(p.status);
   return `<article class="pc" data-i="${i}" style="animation-delay:${(i%9)*40}ms">${cover}
    <div class="top">${!p.simple?`<span class="chip ${done?'done':''}"><i></i>${p.status||'In progress'}</span>`:''}${n>1?`<span class="chip cnt">${n} photos</span>`:''}</div>
-   <div class="info">${p.tag&&!p.simple?`<div class="cat">${p.tag}</div>`:''}<h3>${p.title}</h3><div class="loc"><svg><use href="#i-pin"/></svg>${p.place}${p.client&&!p.simple?' · '+p.client:''}</div>
+   <div class="info">${p.tag&&!p.simple?`<div class="cat">${p.tag}</div>`:''}<h3>${p.title}</h3><div class="loc"><svg><use href="#i-pin"/></svg>${p.place}${p.client&&!p.simple?' · '+p.client:''}</div>${p.by?`<div class="by">${p.by}</div>`:''}
    ${p.progress!=null&&!done&&!p.simple?`<div class="bar"><b style="width:${p.progress}%"></b></div>`:''}</div></article>`;
 }
 function render(){
@@ -652,7 +677,7 @@ grid.onclick=e=>{const c=e.target.closest('.pc');if(!c)return;const p=list()[+c.
 const lb=document.getElementById('lb');let lbImgs=[],lbIx=0;
 function openLB(p,start){
   lbImgs=(p.imgs||[]).map(I).concat(p.photos||[]); if(!lbImgs.length&&p.cover) lbImgs=[p.cover];
-  document.getElementById('lbT').textContent=p.title; document.getElementById('lbS').textContent=p.simple?(p.place||''):[p.tag,p.place,p.client,p.f==='tn'?'T.N Consultant':'M/s Lee Enterprise'].filter(Boolean).join(' · ');
+  document.getElementById('lbT').textContent=p.title; document.getElementById('lbS').textContent=p.simple?[p.place,p.by].filter(Boolean).join(' · '):[p.tag,p.place,p.client,p.f==='tn'?'T.N Consultant':'M/s Lee Enterprise'].filter(Boolean).join(' · ');
   document.getElementById('lbD').textContent=p.simple?'':(p.desc||'');
   const st=lb.querySelector('.stage'); st.style.display=lbImgs.length?'flex':'none';
   document.getElementById('lbTh').innerHTML=lbImgs.length>1?lbImgs.map((s,i)=>`<img src="${s.replace(/\.jpg$/,'_t.jpg').replace('_t_t','_t')}" data-i="${i}" alt="">`).join(''):'';
