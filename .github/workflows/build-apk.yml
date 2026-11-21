@@ -10,6 +10,9 @@ on:
       - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,3 +48,12 @@ jobs:
         with:
           name: LeeEnterprise-apk
           path: LeeEnterprise.apk
+
+      - name: Publish as the latest app download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-v${{ github.run_number }}
+          name: Lee Enterprise App v3.${{ github.run_number }}
+          body: Install over the old app - no need to uninstall. Download on the phone and tap to install.
+          files: LeeEnterprise.apk
+          make_latest: true

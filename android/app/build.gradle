@@ -10,11 +10,25 @@ android {
         applicationId "com.leeenterprise.app"
         minSdk 26
         targetSdk 34
-        versionCode 3
-        versionName "3.0"
+        // Every GitHub build gets a higher number, so it installs over the old app
+        versionCode 10 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInteger()
+        versionName "3." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
+    }
+
+    // Same signing key for every build, so updates install without uninstalling
+    signingConfigs {
+        lee {
+            storeFile file("lee-release.keystore")
+            storePassword "leeenterprise"
+            keyAlias "lee"
+            keyPassword "leeenterprise"
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.lee
+        }
         release {
             minifyEnabled false
         }
