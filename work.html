@@ -494,7 +494,7 @@ async function delFile(id){try{await api({action:'fileDel',key:K(),id});openProj
 
 /* ---------- client requirements (owner) ---------- */
 let reqs=[], curReq=null;
-const PH_DEFAULT=[[40,'Advance — on acceptance of quotation (work starts)'],[30,'On submission of survey / draft design'],[20,'On submission of final drawings / main work'],[10,'Balance — on final handover']];
+const PH_DEFAULT=[[40,'Advance — on acceptance of quotation (work starts)'],[30,'On submission of survey / draft design'],[30,'Balance — on final submission approved by client']];
 async function loadReqs(){
   if(isDemo()){$('oReqs').innerHTML='<p class="muted">Requirements appear here when clients submit the form (live mode).</p>';return}
   try{const j=await api({action:'briefList',key:K()});reqs=j.items||[];

@@ -18,8 +18,7 @@ const FIRM = {
 const DEFAULT_PHASES = [
   { pct: 40, label: 'Advance — on acceptance of quotation (work starts)' },
   { pct: 30, label: 'On submission of survey / draft design' },
-  { pct: 20, label: 'On submission of final drawings / main work' },
-  { pct: 10, label: 'Balance — on final handover' }
+  { pct: 30, label: 'Balance — on final submission approved by client' }
 ];
 
 /** Run once after adding this file so Google asks permission to send email. */
