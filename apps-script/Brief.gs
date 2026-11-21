@@ -61,6 +61,7 @@ function briefObj_(r) {
 function briefRoute_(q, owner) {
   switch (q.action) {
     case 'briefAdd':    return briefAdd_(q.item);
+    case 'briefGet':    return briefGet_(q.clientCode);
     case 'briefList':   if (!owner) throw new Error('Owner key required'); return { ok: true, items: briefRows_().map(briefObj_).reverse() };
     case 'briefUpdate': if (!owner) throw new Error('Owner key required'); return briefUpdate_(q.ref, q.fields);
     case 'quoteSend':   if (!owner) throw new Error('Owner key required'); return quoteSend_(q.ref, q.amount, q.phases, q.notes, q.validDays);
@@ -136,47 +137,96 @@ function phasesHtml_(amount, phases) {
 
 /* ───────── client submits requirement ───────── */
 
+function briefHtml_(it, ref, now, photoUrls, sketchUrls, rev) {
+  const c = it.client, s = it.site || {}, b = it.budget || {}, x = it.extra || {}, nb = s.neighbours || {};
+  const when = Utilities.formatDate(now, TZ, 'dd MMM yyyy, hh:mm a');
+  let html = letterhead_('CLIENT REQUIREMENT FORM' + (rev ? ' — REVISION ' + rev : ''), ref, when);
+  html = html.replace('</style>', '.imgs{margin-top:6px}.imgs div{display:inline-block;width:48%;margin:0 1% 10px;vertical-align:top;text-align:center;font-size:9px;color:#5d6b82}' +
+    '.imgs img{width:100%;max-height:330px;object-fit:contain;border:1px solid #c9d6ea}.pb{page-break-before:always}' +
+    '.lines div{border-bottom:1px solid #b9c6dc;height:26px}.dl td{padding:5px 6px}</style>');
+  html += '<h3>1. Client details</h3>' + kvTable_({ 'Name': c.name, 'Phone / WhatsApp': c.phone, 'Email': c.email, 'Client type': c.type,
+    'Organisation / Department': c.org, 'Designation': c.designation, 'Address': c.address, 'Preferred contact': c.contactPref });
+  html += '<h3>2. Services required</h3><p>' + esc_((it.services || []).join(', ')) + '</p>';
+  html += '<h3>3. Site details</h3>' + kvTable_({ 'Site location / address': s.location, 'District': s.district, 'Google Maps / GPS': s.gps,
+    'Plot / area': s.areaUnknown ? 'Not known — M/s Lee Enterprise to survey' + (s.area ? ' (approx. ' + s.area + ' ' + (s.areaUnit || '') + ')' : '') : (s.area ? (s.area + ' ' + (s.areaUnit || '')) : ''),
+    'Plot size (L × B)': s.dims, 'Road on side': s.roadSide, 'Road width': s.roadWidth,
+    'North neighbour': nb.North, 'South neighbour': nb.South, 'East neighbour': nb.East, 'West neighbour': nb.West,
+    'Land documents': s.docs, 'Ownership': s.ownership, 'Road access': s.access,
+    'Terrain': s.terrain, 'Existing structures / trees': s.existing, 'Electricity / water at site': s.utilities, 'Site notes': s.notes });
+  (it.sections || []).forEach(function (sec, i) { html += '<h3>' + (4 + i) + '. ' + esc_(sec.title) + '</h3>' + kvTable_(sec.answers || {}); });
+  let n = 4 + (it.sections || []).length;
+  html += '<h3>' + n + '. Budget & timeline</h3>' + kvTable_({ 'Budget range': b.range, 'Funding': b.funding, 'Preferred start': b.start, 'Target completion': b.finish,
+    'Top priority': b.priority, 'How did you hear about us': b.source, 'Anything else': b.notes });
+  n++;
+  html += '<h3>' + n + '. Client\'s own ideas & additional information</h3>' + kvTable_({ 'Explanation / additional information': x.notes,
+    'Guidance': x.guideAll ? 'Client requests M/s Lee Enterprise to guide in every item' : '' }) +
+    (x.notes || x.guideAll ? '' : '<p class="small">—</p>');
+  n++;
+  html += '<h3>' + n + '. Deliverables</h3><table class="dl">' +
+    '<tr><td>•</td><td>PDF of all drawings / reports by email and on the client\'s private page</td></tr>' +
+    '<tr><td>•</td><td><b>Final submission: 3 (three) printed copies</b>, signed & sealed</td></tr>' +
+    '<tr><td>•</td><td><b>1 (one) set of site working drawings</b> for use at site</td></tr>' +
+    '<tr><td>•</td><td>Each output is delivered after the payment of the related phase is fulfilled</td></tr></table>';
+  n++;
+  html += '<h3>' + n + '. Payment terms & consent</h3>' +
+    '<div class="box">The fee/amount for this work will be sent by M/s Lee Enterprise <b>after a physical site verification</b>, which is done after all the above requirements are received. <b>Site visit charges may be included</b> and will be shown in the quotation. Payment is phase-wise:</div>' +
+    phasesHtml_(0, DEFAULT_PHASES) +
+    '<p>☑ I confirm that the information given above is correct.<br>☑ I agree to pay in phases as above, of the amount that M/s Lee Enterprise will send me after physical verification (site visit charges may be included). Work starts after the first phase payment, and each requirement/output is delivered after the payment for that phase is fulfilled.</p>' +
+    kvTable_({ 'Signed (typed name)': (it.consent || {}).signature, 'Date': Utilities.formatDate(now, TZ, 'dd MMM yyyy') });
+  // all photos & sketches printed in the PDF
+  const imgBlock = function (title, list, urls) {
+    if (!list.length && !urls.length) return '';
+    let h = '<h3 class="pb">' + title + '</h3><div class="imgs">';
+    if (list.length) list.forEach(function (d, i) { h += '<div><img src="' + d + '"><br>' + title.replace(/s$/, '') + ' ' + (i + 1) + (urls[i] ? ' · ' + esc_(urls[i]) : '') + '</div>'; });
+    else urls.forEach(function (u, i) { h += '<div>' + title.replace(/s$/, '') + ' ' + (i + 1) + ': ' + esc_(u) + '</div>'; });
+    return h + '</div>';
+  };
+  const okImg = function (a) { return (a || []).filter(function (d) { return /^data:image\/(jpeg|png|webp);base64,/.test(d); }); };
+  html += imgBlock('Client sketches & reference photos', okImg(it.sketches), sketchUrls);
+  html += imgBlock('Site photos & documents', okImg(it.photos), photoUrls);
+  // last page: corrections
+  html += '<h3 class="pb">Corrections / additions by client</h3>' +
+    '<p class="small">Want to change anything you wrote? Easiest: open your private client page → <b>Edit my requirement form</b>, change it and submit — a revised PDF is made automatically. ' +
+    'Or write below, take a photo and send it on WhatsApp ' + esc_(FIRM.phone) + '.</p>' +
+    '<div class="lines">' + new Array(19).join('<div></div>') + '</div>' +
+    kvTable_({ 'Client name & signature': ' ', 'Date': ' ' });
+  html += '<div class="ft">This is a computer-generated requirement record. ' + FIRM.name + ' · ' + SITE_URL + '</div></body></html>';
+  return html;
+}
+
+function briefStrip_(it, photoUrls, sketchUrls) {
+  const o = JSON.parse(JSON.stringify(it));
+  delete o.photos; delete o.sketches; delete o.clientCode; delete o.revisionOf;
+  o.photoUrls = photoUrls; o.sketchUrls = sketchUrls;
+  return JSON.stringify(o).slice(0, 48000);
+}
+
+function briefGet_(code) {
+  const p = projectByCode_(code); if (!p) return { ok: false, error: 'Client code not found' };
+  const r = briefRows_().filter(function (x) { return String(x[21]) === String(p[0]); })[0];
+  if (!r) return { ok: false, error: 'No requirement form for this project' };
+  let item; try { item = JSON.parse(r[11]); } catch (e) { return { ok: false, error: 'Saved form could not be read' }; }
+  return { ok: true, ref: r[0], item: item };
+}
+
 function briefAdd_(it) {
   if (!it || !it.client || !it.client.name || !it.client.phone) return { ok: false, error: 'Name and phone are required' };
   if (!it.consent || !it.consent.payment || !it.consent.correct) return { ok: false, error: 'Please tick the consent boxes' };
+  if (it.revisionOf) return briefRevise_(it);
   const res = withLock_(function () {
     const now = new Date();
     const ref = 'LE/REQ/' + Utilities.formatDate(now, TZ, 'yyMMdd') + '-' + String(briefSheet_().getLastRow()).padStart(3, '0');
     const c = it.client, s = it.site || {}, b = it.budget || {};
-    // photos
-    const photoUrls = (it.photos || []).slice(0, 6).map(function (d, i) { return savePhoto_(d, ref.replace(/\//g, '-') + '_' + i); }).filter(String);
-
-    // PDF
-    let html = letterhead_('CLIENT REQUIREMENT FORM', ref, Utilities.formatDate(now, TZ, 'dd MMM yyyy, hh:mm a'));
-    html += '<h3>1. Client details</h3>' + kvTable_({ 'Name': c.name, 'Phone / WhatsApp': c.phone, 'Email': c.email, 'Client type': c.type,
-      'Organisation / Department': c.org, 'Designation': c.designation, 'Address': c.address, 'Preferred contact': c.contactPref });
-    html += '<h3>2. Services required</h3><p>' + esc_((it.services || []).join(', ')) + '</p>';
-    html += '<h3>3. Site details</h3>' + kvTable_({ 'Site location / address': s.location, 'District': s.district, 'Google Maps / GPS': s.gps,
-      'Plot / area': s.area ? (s.area + ' ' + (s.areaUnit || '')) : '', 'Land documents': s.docs, 'Ownership': s.ownership, 'Road access': s.access,
-      'Terrain': s.terrain, 'Existing structures / trees': s.existing, 'Electricity / water at site': s.utilities, 'Site notes': s.notes });
-    (it.sections || []).forEach(function (sec, i) {
-      html += '<h3>' + (4 + i) + '. ' + esc_(sec.title) + '</h3>' + kvTable_(sec.answers || {});
-    });
-    const n = 4 + (it.sections || []).length;
-    html += '<h3>' + n + '. Budget & timeline</h3>' + kvTable_({ 'Budget range': b.range, 'Preferred start': b.start, 'Target completion': b.finish,
-      'Top priority': b.priority, 'How did you hear about us': b.source, 'Anything else': b.notes });
-    if (photoUrls.length) html += '<h3>Site photos</h3><p class="small">' + photoUrls.map(function (u, i) { return 'Photo ' + (i + 1) + ': ' + u; }).join('<br>') + '</p>';
-    html += '<h3>' + (n + 1) + '. Payment terms & consent</h3>' +
-      '<div class="box">The fee/amount for this work will be sent by M/s Lee Enterprise <b>after a physical site verification</b>, which is done after all the above requirements are received. Payment is phase-wise:</div>' +
-      phasesHtml_(0, DEFAULT_PHASES) +
-      '<p>☑ I confirm that the information given above is correct.<br>☑ I agree to pay in phases as above, of the amount that M/s Lee Enterprise will send me after physical verification. Work starts after the first phase payment.</p>' +
-      kvTable_({ 'Signed (typed name)': it.consent.signature, 'Date': Utilities.formatDate(now, TZ, 'dd MMM yyyy') });
-    html += '<div class="ft">This is a computer-generated requirement record. ' + FIRM.name + ' · ' + SITE_URL + '</div></body></html>';
-    const pdf = savePdf_(html, ref.replace(/\//g, '-') + ' Requirement - ' + c.name);
-
+    const base = ref.replace(/\//g, '-');
+    const photoUrls = (it.photos || []).slice(0, 6).map(function (d, i) { return savePhoto_(d, base + '_site' + i); }).filter(String);
+    const sketchUrls = (it.sketches || []).slice(0, 8).map(function (d, i) { return savePhoto_(d, base + '_sketch' + i); }).filter(String);
+    const pdf = savePdf_(briefHtml_(it, ref, now, photoUrls, sketchUrls, 0), base + ' Requirement - ' + c.name);
     briefSheet_().appendRow([ref, now, c.name, "'" + c.phone, c.email || '', c.type || '', c.org || '', (it.services || []).join(', '),
-      [s.location, s.district].filter(String).join(', '), b.range || '', b.start || '', JSON.stringify(it).slice(0, 45000),
+      [s.location, s.district].filter(String).join(', '), b.range || '', b.start || '', briefStrip_(it, photoUrls, sketchUrls),
       pdf.url, 'YES — phase-wise after physical verification', it.consent.signature || '', 'New', '', '', '', '', '', '']);
-
     return { ok: true, ref: ref, pdf: pdf.url, blob: pdf.blob, row: briefSheet_().getLastRow(), c: c, s: s, b: b, services: (it.services || []).join(', ') };
   });
   if (!res.ok) return res;
-  // Private client section: a project page only this client (with the code) and the company can see
   const c = res.c, s = res.s, b = res.b;
   const pj = saveProject_({ name: res.services + ' — ' + c.name, client: c.name, location: [s.location, s.district].filter(String).join(', '),
     company: COMPANIES[0], category: /survey/i.test(res.services) ? 'Survey' : /road|water/i.test(res.services) ? 'Infrastructure' : 'Building',
@@ -184,16 +234,17 @@ function briefAdd_(it) {
   if (pj.ok) {
     briefSheet_().getRange(res.row, 22).setValue(pj.id);
     addUpdate_({ projectId: pj.id, title: 'Requirement received (' + res.ref + ')',
-      text: 'Thank you. We have your requirement form: ' + res.pdf + '\nNext: we will contact you to fix a physical site visit. After verification you will receive the quotation here, by email and on WhatsApp.' });
+      text: 'Thank you. We have your requirement form: ' + res.pdf + '\nNeed to change something? Use "Edit my requirement form" on this page.\nNext: we will contact you to fix a physical site visit. After verification you will receive the quotation here, by email and on WhatsApp.' });
   }
   const portal = SITE_URL + 'work.html?code=' + (pj.code || '');
-  const subj = 'Client requirement received — ' + res.ref;
   const body = 'Dear ' + c.name + ',\n\nThank you for sharing your requirements with M/s Lee Enterprise. Your reference number is ' + res.ref + '.\n\n' +
     'Your PRIVATE client page (only you and M/s Lee Enterprise can see it):\n' + portal + '\nClient code: ' + (pj.code || '-') + '\n' +
-    'There you can follow progress, see your quotation and chat with us privately. Please do not share this code.\n\n' +
-    'Next steps:\n1. We will contact you to fix a physical site visit.\n2. After verification we will send the quotation with phase-wise payment (40% / 30% / 30%).\n\n' +
+    'There you can follow progress, see your quotation, drawings and 3D model, approve work and chat with us privately. Please do not share this code.\n\n' +
+    'To correct or add anything in your form: ' + SITE_URL + 'brief.html?edit=' + (pj.code || '') + '\n\n' +
+    'Next steps:\n1. We will contact you to fix a physical site visit.\n2. After verification we will send the quotation (site visit charges may be included) with phase-wise payment (40% / 30% / 30%).\n' +
+    '3. Deliverables: PDF by email, and at final submission 3 printed copies + 1 set of site working drawings — each delivered after the payment of that phase.\n\n' +
     'Your requirement form (PDF) is attached.\n\nRegards,\nEr. Lishi Kuli\nM/s Lee Enterprise\n' + FIRM.phone + '\n' + SITE_URL;
-  try { if (c.email) MailApp.sendEmail({ to: c.email, subject: subj, body: body, attachments: [res.blob], name: 'M/s Lee Enterprise', replyTo: ownerEmail_() }); } catch (e) {}
+  try { if (c.email) MailApp.sendEmail({ to: c.email, subject: 'Client requirement received — ' + res.ref, body: body, attachments: [res.blob], name: 'M/s Lee Enterprise', replyTo: ownerEmail_() }); } catch (e) {}
   try { MailApp.sendEmail({ to: ownerEmail_(), subject: 'NEW REQUIREMENT ' + res.ref + ' — ' + c.name + ' (' + res.services + ')',
     body: 'New client requirement.\n\nClient: ' + c.name + '\nPhone: ' + c.phone + '\nEmail: ' + (c.email || '-') + '\nServices: ' + res.services +
       '\nSite: ' + (s.location || '-') + '\nBudget: ' + (b.range || '-') + '\nClient code: ' + (pj.code || '-') + '\n\nPDF: ' + res.pdf + '\nOpen owner panel: ' + SITE_URL + 'work.html#owner',
@@ -201,7 +252,28 @@ function briefAdd_(it) {
   return { ok: true, ref: res.ref, pdf: res.pdf, code: pj.code || '', portal: portal };
 }
 
-/* ───────── owner actions ───────── */
+function briefRevise_(it) {
+  const p = projectByCode_(it.clientCode); if (!p) return { ok: false, error: 'Client code not found' };
+  const r = briefRows_().filter(function (x) { return String(x[0]) === String(it.revisionOf) && String(x[21]) === String(p[0]); })[0];
+  if (!r) return { ok: false, error: 'This form does not belong to your code' };
+  let old = {}; try { old = JSON.parse(r[11]); } catch (e) {}
+  const rev = (Number(old.rev) || 0) + 1, now = new Date(), ref = r[0], base = ref.replace(/\//g, '-') + '_R' + rev;
+  const newP = (it.photos || []).slice(0, 6).map(function (d, i) { return savePhoto_(d, base + '_site' + i); }).filter(String);
+  const newK = (it.sketches || []).slice(0, 8).map(function (d, i) { return savePhoto_(d, base + '_sketch' + i); }).filter(String);
+  const photoUrls = (old.photoUrls || []).concat(newP), sketchUrls = (old.sketchUrls || []).concat(newK);
+  const pdf = savePdf_(briefHtml_(it, ref, now, photoUrls, sketchUrls, rev), ref.replace(/\//g, '-') + ' Requirement R' + rev + ' - ' + it.client.name);
+  it.rev = rev;
+  const sh = briefSheet_(), c = it.client, s = it.site || {}, b = it.budget || {};
+  sh.getRange(r._row, 3, 1, 11).setValues([[c.name, "'" + c.phone, c.email || '', c.type || '', c.org || '', (it.services || []).join(', '),
+    [s.location, s.district].filter(String).join(', '), b.range || '', b.start || '', briefStrip_(it, photoUrls, sketchUrls), pdf.url]]);
+  sh.getRange(r._row, 16).setValue('Revised by client (R' + rev + ')');
+  addUpdate_({ projectId: p[0], title: 'Requirement form corrected by client — revision ' + rev, text: 'Revised requirement PDF: ' + pdf.url });
+  try { MailApp.sendEmail({ to: ownerEmail_(), subject: 'REQUIREMENT REVISED R' + rev + ' — ' + ref + ' — ' + c.name,
+    body: 'The client corrected their requirement form.\n\nRevised PDF: ' + pdf.url + '\nOwner panel: ' + SITE_URL + 'work.html#owner', attachments: [pdf.blob], name: 'Lee Enterprise Website' }); } catch (e) {}
+  try { if (c.email) MailApp.sendEmail({ to: c.email, subject: 'Your corrected requirement form — ' + ref + ' (R' + rev + ')',
+    body: 'Dear ' + c.name + ',\n\nYour corrections are saved. The revised PDF is attached.\n\nRegards,\nM/s Lee Enterprise\n' + FIRM.phone, attachments: [pdf.blob], name: 'M/s Lee Enterprise', replyTo: ownerEmail_() }); } catch (e) {}
+  return { ok: true, ref: ref, pdf: pdf.url, code: String(it.clientCode).toUpperCase(), rev: rev };
+}
 
 function briefFind_(ref) { return briefRows_().filter(function (r) { return String(r[0]) === String(ref); })[0] || null; }
 

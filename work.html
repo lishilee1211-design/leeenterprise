@@ -146,7 +146,7 @@ input[type=range]{padding:0;accent-color:var(--blue)}
     </div>
     <div id="cView" class="hidden">
       <div class="ph" id="cHead"></div>
-      <div class="card" id="cFilesCard"><h3>Documents, drawings &amp; 3D</h3><div id="cFiles"><p class="muted">Loading…</p></div></div>
+      <div class="card" id="cFilesCard"><h3>Documents, drawings &amp; 3D <a class="btn btn-sm btn-line" id="cEditBrief" href="brief.html">✎ Edit my requirement form</a></h3><div id="cFiles"><p class="muted">Loading…</p></div></div>
       <div class="card"><h3>Progress updates <button class="btn btn-sm btn-line" id="cRefresh">Refresh</button></h3><div class="tl" id="cTl"></div></div>
       <div class="card">
         <h3>🔒 Private chat with M/s Lee Enterprise</h3>
@@ -357,7 +357,7 @@ $('cName').value=S.get('cname','');
 async function cLoad(){
   try{const j=await api({action:'client',clientCode:cCode});S.set('ccode',cCode);
     $('cEnter').classList.add('hidden');$('cView').classList.remove('hidden');
-    head($('cHead'),j.project);timeline($('cTl'),j.updates,false);chat($('cChat'),j.messages,'Client');loadClientFiles();
+    head($('cHead'),j.project);timeline($('cTl'),j.updates,false);chat($('cChat'),j.messages,'Client');loadClientFiles();$('cEditBrief').href='brief.html?edit='+encodeURIComponent(cCode);
   }catch(e){toast(e.message);$('cEnter').classList.remove('hidden');$('cView').classList.add('hidden')}
 }
 $('cGo').onclick=()=>{cCode=$('cCode').value.trim().toUpperCase();if(cCode.length<4){toast('Enter your project code');return}cLoad()};

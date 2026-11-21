@@ -33,6 +33,7 @@ main{max-width:860px;margin:0 auto;padding:16px 14px}
 .card h2{font-size:20px;margin-bottom:4px}
 .card .sub{color:var(--muted);font-size:13.5px;margin-bottom:16px}
 .card h3{font-size:16px;margin:6px 0 12px;display:flex;gap:10px;align-items:center;color:var(--navy2)}
+.card h3 i img{width:26px;height:26px;display:block}
 .card h3 i{font-style:normal;width:34px;height:34px;border-radius:10px;background:#eef4ff;display:grid;place-items:center;font-size:17px}
 label.f{display:grid;gap:6px;font-size:12.8px;font-weight:600;color:#33445e;margin-bottom:13px}
 label.f em{font-style:normal;color:var(--red)}
@@ -69,6 +70,23 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff
 .consent input{width:22px;height:22px;accent-color:var(--green);flex:0 0 22px;margin-top:2px}
 .consent span{font-size:13.8px}
 .photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.qh{margin:18px 0 10px;padding-top:14px;border-top:1px dashed #d5deec;font-size:14px;font-weight:800;color:#0a2350;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.qh:first-of-type{border-top:0;padding-top:0;margin-top:4px}
+.qh img{width:26px;height:26px}
+.lvl{display:flex;gap:6px;flex-wrap:wrap;margin:-6px 0 13px}
+.lvl label{flex:1;min-width:92px;text-align:center;border:1.5px solid #d5deec;border-radius:12px;padding:8px 6px;font-size:12.5px;cursor:pointer;background:#fff;line-height:1.25}
+.lvl label small{display:block;color:#7a879c;font-size:11px}
+.lvl input{display:none}.lvl label:has(input:checked){border-color:#1a5fd0;background:#eaf2ff;color:#0a2350;font-weight:700}
+.lvl label.g{flex:0 0 auto;min-width:0}
+.guide{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#1a5fd0;margin:-8px 0 12px;cursor:pointer}
+.guide input{width:16px;height:16px}
+.nb{display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.nb b{font-size:13px;color:#0a2350}
+.deliv{display:grid;gap:8px;margin:10px 0 4px}
+.deliv div{display:flex;gap:10px;align-items:flex-start;background:#f5f8fe;border-radius:12px;padding:10px 12px;font-size:13.5px}
+.deliv img{width:30px;height:30px;flex:0 0 30px}
+.svc .ic img{width:40px;height:40px;display:block}
+@media (max-width:640px){.nb{grid-template-columns:56px 1fr}.nb input{grid-column:2}}
 .photos img{width:72px;height:72px;object-fit:cover;border-radius:10px}
 .review{font-size:13.5px}
 .review h4{font-size:14px;margin:14px 0 6px;color:var(--navy2)}
@@ -136,6 +154,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff
         <label class="f">Unit<select id="sUnit"><option>sq m</option><option>sq ft</option><option>hectare</option><option>acre</option><option>bigha</option><option>km (length)</option></select></label>
         <label class="f">Terrain<select id="sTerrain"><option value="">Select…</option><option>Flat</option><option>Gentle slope</option><option>Steep slope / hill</option><option>River bank / low-lying</option><option>Mixed</option></select></label>
       </div>
+      <label class="guide"><input type="checkbox" id="sAreaG"> Area / boundary not known — let M/s Lee Enterprise do the survey</label>
+      <div class="three">
+        <label class="f">Plot size (L × B)<input id="sDim" placeholder="e.g. 60 ft × 40 ft"></label>
+        <label class="f">Road on which side?<select id="sRoad"><option value="">Select…</option><option>North</option><option>South</option><option>East</option><option>West</option><option>Two sides (corner plot)</option><option>No direct road</option><option>Not sure — guide me</option></select></label>
+        <label class="f">Road width in front<input id="sRoadW" placeholder="e.g. 6 m / 20 ft"></label>
+      </div>
+      <label class="f">Neighbours / what is on each side <small>(helps with privacy, light, drainage and setbacks)</small></label>
+      <div id="nbBox" style="margin-bottom:12px"></div>
       <label class="f">Land documents available</label>
       <div class="chips" id="sDocs" style="margin:-6px 0 13px"></div>
       <div class="two">
@@ -146,7 +172,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff
       <div class="chips" id="sExisting" style="margin:-6px 0 13px"></div>
       <label class="f">Utilities available</label>
       <div class="chips" id="sUtil" style="margin:-6px 0 13px"></div>
-      <label class="f">Site photos / sketches / documents <small>(up to 6 photos)</small><input type="file" id="sPhotos" accept="image/*" multiple></label>
+      <label class="f">Site photos / land documents <small>(up to 6 photos)</small><input type="file" id="sPhotos" accept="image/*" multiple></label>
       <div class="photos" id="sPrev"></div>
       <label class="f" style="margin-top:12px">Anything else about the site?<textarea id="sNotes" rows="2" placeholder="Drainage, landslide, neighbours, boundary disputes…"></textarea></label>
     </div>
@@ -172,6 +198,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff
       <label class="f">How did you hear about us?<select id="bSrc"><option value="">Select…</option><option>Friend / family</option><option>Earlier client</option><option>Department / officer</option><option>Visiting card / QR</option><option>Website / Google</option><option>WhatsApp / Facebook</option><option>Other</option></select></label>
       <label class="f">Anything else you want us to know?<textarea id="bNotes" rows="3"></textarea></label>
     </div>
+    <div class="card">
+      <h3><i>✏️</i>Your own ideas, sketches &amp; extra information</h3>
+      <p class="sub">Drew your idea on paper? Take a photo and upload it — even a rough sketch helps us design exactly what you want. You can also upload photos of houses, rooms or gardens you like.</p>
+      <label class="f">Sketches / reference photos <small>(up to 8)</small><input type="file" id="kPhotos" accept="image/*" multiple></label>
+      <div class="photos" id="kPrev"></div>
+      <label class="f" style="margin-top:12px">Explain your sketch / additional information<textarea id="kNotes" rows="4" placeholder="e.g. 'Kitchen should face east, I want a big window towards the river, mother's room on ground floor, space for 30 chairs for church meetings…'"></textarea></label>
+      <label class="guide" style="margin-top:2px"><input type="checkbox" id="kGuide"> I am not sure about many things — please guide me in every item</label>
+    </div>
   </section>
 
   <!-- STEP 6 -->
@@ -187,8 +221,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff
         <tr><td>1</td><td>Advance — on acceptance of quotation (work starts)</td><td><b>40%</b></td></tr>
         <tr><td>2</td><td>On submission of survey / draft design</td><td><b>30%</b></td></tr>
         <tr><td>3</td><td>Balance — on final submission approved by client</td><td><b>30%</b></td></tr></table>
+      <div class="note"><b>Site visit charges</b> (travel, survey crew / drone mobilisation) may apply depending on location. They will be shown clearly in the quotation sent after this form.</div>
+      <h3 style="margin-top:16px"><i>📦</i>What you will receive</h3>
+      <div class="deliv">
+        <div><img src="" data-fx="Page facing up" alt="">PDF of all drawings / reports — sent by <b>email</b> and on your private client page</div>
+        <div><img src="" data-fx="Open book" alt=""><span><b>Final submission: 3 printed copies</b> (signed &amp; sealed) <b>+ 1 set of site working drawings</b> for construction at site</span></div>
+        <div><img src="" data-fx="Mobile phone" alt="">Quotation, progress, 3D models &amp; approvals on your private page and WhatsApp</div>
+      </div>
       <label class="consent"><input type="checkbox" id="okCorrect"><span>I confirm that the information I have given is correct to the best of my knowledge.</span></label>
-      <label class="consent"><input type="checkbox" id="okPay"><span><b>Payment consent (required):</b> I agree to pay M/s Lee Enterprise phase-wise (40% / 30% / 30%) the amount that M/s Lee Enterprise will send me <b>after physical site verification</b>, which is done after all requirements are received. Work starts after the Phase 1 payment.</span></label>
+      <label class="consent"><input type="checkbox" id="okPay"><span><b>Payment consent (required):</b> I agree to pay M/s Lee Enterprise phase-wise (40% / 30% / 30%) the amount that M/s Lee Enterprise will send me <b>after physical site verification</b>, which is done after all requirements are received. Work starts after the Phase 1 payment. I understand that <b>site visit charges may be included</b> in the quotation, and that <b>M/s Lee Enterprise will deliver each requirement / output after the payment for that phase is fulfilled</b>.</span></label>
       <label class="f" style="margin-top:14px">Type your full name as signature <em>*</em><input id="sig" placeholder="Full name"></label>
       <p class="muted" style="font-size:12.5px;color:#617089">A PDF of this form will be sent to you and to M/s Lee Enterprise.</p>
     </div>
@@ -206,6 +247,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff
       <div class="acts">
         <a class="btn bp" id="dPortal">Open my private page →</a>
         <a class="btn bl" id="dPdf" target="_blank" rel="noopener">📄 Open / download your PDF</a>
+        <a class="btn bl" id="dEdit">✎ Edit / correct my answers</a>
         <a class="btn bw" id="dWa" target="_blank" rel="noopener">Send reference on WhatsApp</a>
         <a class="btn bl" href="work.html">Track an existing project</a>
       </div>
@@ -234,63 +276,140 @@ chipSet('sDocs','docs',['LPC / Land Possession Certificate','Allotment letter','
 chipSet('sExisting','existing',['Empty land','Old building to demolish','Building to extend','Big trees','Stream / drain','Retaining wall','Electric line','Graves / sacred site']);
 chipSet('sUtil','util',['Electricity','Water supply','Mobile network','None']);
 chipSet('bPrio','prio',['Quality','Low cost','Fast completion','Strength / safety','Good looks','Low maintenance']);
+const NB=['Road','House / building','Open plot','Shop / market','Drain / stream','Hill slope (higher)','Valley / slope (lower)','Forest / trees','Government land','Not sure'];
+$('nbBox').innerHTML=['North','South','East','West'].map(d=>`<div class="nb"><b>${d}</b><select id="nb${d}"><option value="">Select…</option>${NB.map(o=>`<option>${o}</option>`).join('')}</select><input id="nb${d}T" placeholder="Name / details (optional)"></div>`).join('');
 $('sDist').innerHTML+='<option>'+DISTRICTS.join('</option><option>')+'</option>';
 
 /* ---------- services & their questions ----------
  field types: t=text, n=number, s=select(o), c=chips(o, multi), a=textarea, y=yes/no */
+const GUIDE='Not sure — Lee Enterprise to guide me';
+const H=(title,fx)=>[title,'h',fx];               // sub-heading
+const P=label=>[label+' — price level','p'];       // Low / Medium / High
 const SERVICES=[
- {id:'survey',ic:'🛰️',name:'Land / Area Survey & Mapping',d:'Drone, LiDAR, DGPS, boundary, contour',q:[
+ {id:'survey',fx:'Satellite',ic:'🛰️',name:'Land / Area Survey & Mapping',d:'Drone, LiDAR, DGPS, boundary, contour',q:[
   ['Purpose of survey','c',['Boundary / demarcation','Topographic / contour','Road / route alignment','Site for building design','Land sale / purchase','Earthwork / volume','As-built / progress','Flood / river study','GIS / land use map']],
-  ['Survey area or length','t','e.g. 2 ha, 1,500 sq m, 3.5 km'],
-  ['Method preferred','c',['Drone photo (orthophoto)','Drone LiDAR (under trees)','DGPS / GNSS','Total station','Let Lee Enterprise advise']],
+  ['Survey area or length','t','e.g. 2 ha, 1,500 sq m, 3.5 km  (tick below if not known)'],
+  ['Method preferred','c',['Drone photo (orthophoto)','Drone LiDAR (under trees)','DGPS / GNSS','Total station']],
   ['Ground cover','s',['Open / cleared','Light bushes','Dense forest / bamboo','Built-up area','Mixed']],
-  ['Outputs needed','c',['AutoCAD DWG','PDF map','Contour map','Orthophoto (TIFF)','DEM / DTM','Point cloud (LAS)','L-section & cross-sections','Area / volume report','KML for Google Earth','Boundary pillars fixed on ground']],
-  ['Contour interval','s',['0.5 m','1 m','2 m','5 m','Not sure']],
-  ['Coordinate system','s',['WGS 84 / UTM 46N','Local / arbitrary','Department will specify','Not sure']],
+  ['Outputs needed','c',['AutoCAD DWG','PDF map','Contour map','Orthophoto (TIFF)','DEM / DTM','Point cloud (LAS)','3D model to view on phone','L-section & cross-sections','Area / volume report','KML for Google Earth','Boundary pillars fixed on ground']],
+  ['Contour interval','s',['0.5 m','1 m','2 m','5 m']],
+  ['Coordinate system','s',['WGS 84 / UTM 46N','Local / arbitrary','Department will specify']],
   ['Neighbours / boundary issues?','a','Any dispute, missing pillars, old records…'],
  ]},
- {id:'arch',ic:'🏠',name:'Architectural Design (Building)',d:'Plans, elevations, 3D, submission drawings',q:[
+ {id:'arch',fx:'House with garden',ic:'🏠',name:'Architectural Design (Building)',d:'Plans, elevations, 3D, submission drawings',q:[
+  H('Building','House'),
   ['Building type','s',['Residential house','Residential + shops (mixed use)','Commercial / shops / office','Hotel / homestay / guest house','Government office','School / hostel / institution','Church / community hall','Hospital / clinic','Warehouse / workshop','Other']],
   ['New or existing?','s',['New building','Extension of existing building','Renovation / remodel','Additional floor']],
   ['Floors now','s',['Ground only','G+1','G+2','G+3','G+4','G+5 or more']],
-  ['Provision for future floors?','s',['No','Yes — +1 floor','Yes — +2 floors','Yes — up to G+5','Not sure']],
+  ['Provision for future floors?','s',['No','Yes — +1 floor','Yes — +2 floors','Yes — up to G+5']],
   ['Approx. built-up area wanted','t','e.g. 1,800 sq ft per floor'],
-  ['Number of people who will use it','t','e.g. family of 6 / 40 staff'],
-  ['Bedrooms','s',['1','2','3','4','5','6+','Not applicable']],
+  ['People who will live / work here','t','e.g. family of 6 (2 elders, 2 kids) / 40 staff'],
+  ['Floor-to-ceiling height','s',['Standard (10 ft)','Higher (11–12 ft)','Double-height living / lobby']],
+  ['Overall finish level','p'],
+  H('Bedrooms & family rooms','Bed'),
+  ['Number of bedrooms','s',['1','2','3','4','5','6','7+','Not applicable']],
+  ['Master bedroom should have','c',['Attached bathroom','Walk-in wardrobe / dressing','Separate clothes changing room','Balcony','Sitting area','Study table','TV wall','Space for baby cot']],
+  ['Kids rooms','s',['None','1','2','3+']],
+  ['Kids room needs','c',['Study table','Bunk bed','Play area','Attached bathroom','Wardrobe','Bookshelf']],
+  ['Guest room','s',['No','Yes — ground floor','Yes — upper floor','Yes — with separate entry']],
+  ['Elders room on ground floor?','s',['Yes','No','Not needed']],
+  ['Wardrobes','s',['Built-in in every bedroom','Only master bedroom','Loose furniture']],
+  H('Special rooms & spaces','Popcorn'),
+  ['Other rooms wanted','c',['Home theatre / media room','Prayer / puja room','Study / library','Home gym','Game / play room','Bar / lounge','Separate clothes changing room','Laundry room','Store room','Pantry','Servant / worker room','Driver room','Workshop','Rooftop sit-out','Terrace garden']],
+  ['Living area','s',['One big living + dining','Formal living + family lounge separately','Open plan (living, dining, kitchen together)']],
+  ['Dining for how many?','s',['4','6','8','10+']],
+  ['Verandah / sit-out','c',['Front verandah','Back verandah','Wrap-around verandah','Covered sit-out with seating','No verandah']],
+  ['Balconies','s',['None','1','2','One for every bedroom']],
+  H('Office / commercial (if any)','Office building'),
+  ['Office layout','s',['Open space office','Separate cabins / rooms','Mix — open space + few cabins','Not applicable']],
+  ['Number of cabins / rooms','t','e.g. 4 cabins + 1 MD room'],
+  ['Office needs','c',['Reception / waiting','Conference / meeting room','Pantry','Records / file room','Server room','Staff toilets (gents / ladies)','Accessible toilet','Shops facing road']],
+  H('Kitchen','Cooking'),
+  ['Kitchen type','s',['Closed kitchen','Open kitchen','Semi-open (with glass partition)','Two kitchens (main + wet / firewood kitchen)']],
+  ['Kitchen needs','c',['Modular cabinets','Island / breakfast counter','Chimney','Separate wash / utility area','Store / pantry','Firewood / smoke kitchen outside','Gas pipeline']],
+  P('Kitchen'),
+  H('Bathrooms & toilets','Bathtub'),
+  ['Number of bathrooms','s',['1','2','3','4','5','6+']],
+  ['Toilet type','s',['All Western','All Indian','Mix — Western + one Indian','Western with health faucet']],
   ['Attached bathrooms','s',['All bedrooms','Some','Common bathroom only','Not applicable']],
-  ['Rooms / spaces needed','c',['Living room','Dining','Kitchen (open)','Kitchen (closed)','Store / pantry','Prayer room','Guest room','Study / home office','Office / meeting hall','Shops on ground floor','Parking / garage','Servant / worker room','Utility / washing area','Balcony','Terrace / rooftop use','Lift','Internal staircase','External staircase','Water tank / sump','Septic tank','Rainwater harvesting','Solar panels']],
+  ['Bathroom fittings','c',['Shower panel','Bathtub','Jacuzzi','Geyser','Solar hot water','Glass shower partition','Wall-hung WC','Counter-top wash basin','Exhaust fan','Powder room (guest toilet)']],
+  P('Bathroom tiles & fittings'),
+  H('Staircase','Ladder'),
+  ['Staircase type','s',['Dog-legged (2 flights)','Straight','L-shaped','U-shaped / open well','Spiral','Floating / cantilever','External steel stair']],
+  ['Staircase location','s',['Inside the house','Outside','Both — inside + outside for upper floor tenants']],
+  ['Steps finish','s',['Granite','Marble','Vitrified tiles','Wooden','Kota / stone']],
+  ['Railing','s',['Stainless steel','Glass with SS','MS / iron grill','Wooden']],
+  P('Staircase'),
+  H('Windows, glass & doors','Window'),
+  ['Window frame','s',['UPVC','Aluminium','PVC','Wooden','Steel / MS']],
+  ['Glass type','s',['Clear glass','Toughened glass','Tinted glass','Reflective glass','Frosted (bathrooms)','Double-glazed (noise / cold)']],
+  ['Window size preference','s',['Large windows — lots of light','Standard size','Floor-to-ceiling / French windows','Small — more privacy']],
+  ['Window extras','c',['Safety grill','Mosquito net','Sliding windows','Openable / casement','Bay window with seating','Skylight']],
+  P('Windows & glass'),
+  ['Main door','s',['Solid teak / hardwood','Engineered wood','Steel security door','WPC','Double door']],
+  ['Internal doors','s',['Flush doors','Panel doors','WPC / PVC (bathrooms)','Wooden']],
+  P('Doors'),
+  H('Floors, ceiling & electrical','Light bulb'),
+  ['Flooring','c',['Vitrified tiles','Marble','Granite','Wooden / laminate','Kota stone','Epoxy (garage)','Anti-skid tiles (bathrooms)']],
+  P('Flooring'),
+  ['False ceiling','s',['All rooms','Living & master only','No false ceiling']],
+  ['Electrical needs','c',['AC points (write how many in notes)','Inverter / power backup','Generator','CCTV','Smart home / automation','EV charging point','Outdoor lighting','Solar panels']],
+  H('Elevation & 3D look','Classical building'),
+  ['Elevation style','c',['Modern / contemporary','Traditional Arunachali / wooden','Colonial / sloped roof','Minimal / box','Glass façade','Mixed — will share photos']],
+  ['Elevation features','c',['Stone cladding','Wooden louvers / panels','ACP / HPL panels','Texture paint','Glass railing balconies','Jaali / screens','Pergola','Sloped roof with dormers','Name plate / logo wall','Front porch with columns']],
+  ['Elevation needed for','s',['Front only','Front + one side','All four sides']],
+  ['How many elevation options to see?','s',['1','2','3']],
+  P('Elevation'),
+  ['Roof type','s',['RCC flat roof','Sloped CGI / metal sheet','RCC + sloped sheet on top','Clay / shingle roof']],
+  H('Colours you prefer (for 3D model)','Artist palette'),
+  ['Exterior colour','c',['White / off-white','Cream / beige','Grey','Earthy brown / terracotta','Wood finish','Dark (charcoal / black)','Bright / bold colours']],
+  ['Interior colour','c',['White / light','Warm (cream, peach)','Cool (light blue, grey)','Wood + white','Bold accent walls']],
+  ['Roof colour','s',['Red','Green','Blue','Grey','Brown','Black']],
+  ['Colours to avoid / favourite colour','t','e.g. no red, favourite is sky blue'],
+  H('Parking, services & rules','Automobile'),
   ['Number of vehicles to park','s',['None','1','2','3–4','5+']],
-  ['Style you like','c',['Modern / contemporary','Traditional Arunachali / wooden','Colonial / sloped roof','Minimal / box','Mixed — will share photos']],
-  ['Roof type','s',['RCC flat roof','Sloped CGI / metal sheet','RCC + sloped sheet on top','Let Lee Enterprise advise']],
+  ['Two-wheelers','s',['None','1–2','3+']],
+  ['Services','c',['Lift','Space for future lift','Overhead water tank','Underground sump','Septic tank','Rainwater harvesting','Borewell','Compound wall & gate']],
   ['Vastu to be followed?','s',['Yes, strictly','Where possible','No']],
-  ['Special needs','c',['Elderly / wheelchair friendly','Large windows / daylight','Privacy from road','Earthquake-resistant focus','Low maintenance materials','Space for future lift']],
-  ['Drawings needed','c',['Concept layout','Floor plans','Elevations & sections','3D views','Walkthrough video','Working drawings','Submission / approval drawings','Furniture layout']],
-  ['Reference / dream design','a','Describe or paste links to photos you like'],
+  ['Special needs','c',['Elderly / wheelchair friendly','Large windows / daylight','Privacy from road','Earthquake-resistant focus','Low maintenance materials','Pets','Rental units / separate entry']],
+  ['Drawings needed','c',['Concept layout','Floor plans','Elevations & sections','3D views','Walkthrough video','Working drawings','Submission / approval drawings','Furniture layout','Electrical & plumbing layout']],
+  ['Reference / dream design','a','Describe or paste links to photos you like (or upload in the Sketches step)'],
  ]},
- {id:'struct',ic:'🧱',name:'Structural Design',d:'RCC/steel design, retaining walls, tanks',q:[
+ {id:'land',fx:'Deciduous tree',ic:'🌳',name:'Landscaping & Outdoor',d:'Garden, lawn, paving, gate, lighting',q:[
+  ['Areas to landscape','c',['Front yard','Back yard','Side yards','Driveway','Terrace / roof garden','Courtyard','Whole campus / compound']],
+  ['Approx. open area','t','e.g. 400 sq m'],
+  ['Garden style','s',['Natural / local Arunachal plants','Tropical','Formal / neat','Japanese / Zen','Modern minimal','Kitchen garden / orchard']],
+  ['Elements wanted','c',['Lawn','Shade trees','Flowering plants','Fruit trees','Kitchen garden','Pathway / walkway','Driveway paving','Car parking paving','Gazebo / hut','Outdoor seating','BBQ / bonfire area','Water fountain','Fish pond','Children’s play area','Swimming pool','Compound wall','Main gate design','Fencing','Retaining / terrace walls','Steps on slope','Garden lighting','Drainage / rainwater']],
+  ['Watering','s',['Manual','Drip irrigation','Sprinklers']],
+  ['Maintenance you can manage','s',['Low maintenance','Medium','High — gardener available']],
+  P('Landscaping'),
+ ]},
+ {id:'struct',fx:'Brick',ic:'🧱',name:'Structural Design',d:'RCC/steel design, retaining walls, tanks',q:[
   ['What needs structural design?','c',['Building','Retaining wall','Water tank / reservoir','Bridge / culvert','Steel shed / truss','Foundation only','Check existing structure']],
-  ['Structure type preferred','s',['RCC frame','Load-bearing masonry','Steel structure','Timber / bamboo','Let Lee Enterprise advise']],
+  ['Structure type preferred','s',['RCC frame','Load-bearing masonry','Steel structure','Timber / bamboo']],
   ['Height / floors or wall height','t','e.g. G+2, or 6 m wall'],
-  ['Soil test done?','s',['Yes — report available','No — please arrange','Not sure']],
+  ['Soil test done?','s',['Yes — report available','No — please arrange']],
   ['Existing drawings available?','s',['Architectural drawings ready','From another architect','No — design needed too']],
   ['Outputs needed','c',['Structural drawings','Bar bending schedule (BBS)','Design calculation report','Quantity estimate','Site supervision']],
  ]},
- {id:'build',ic:'🏗️',name:'Building Construction',d:'Turnkey, labour, supervision',q:[
+ {id:'build',fx:'Building construction',ic:'🏗️',name:'Building Construction',d:'Turnkey, labour, supervision',q:[
   ['Type of contract wanted','s',['Turnkey (material + labour)','Labour only — I supply material','Supervision / project management only','Part work (e.g. only structure)']],
   ['Stage of project now','s',['Only land','Drawings ready, not started','Foundation done','Structure partly done','Finishing stage','Repair / renovation']],
   ['Approved drawings available?','s',['Yes','No — need design too','In process']],
-  ['Material quality','s',['Economy','Standard','Premium','Mix — will discuss']],
+  ['Material quality','p'],
   ['Work included','c',['Foundation & structure','Brick / block work','Plaster & paint','Flooring & tiles','Doors & windows','Electrical wiring','Plumbing & sanitary','Water tank & septic','Boundary wall & gate','Retaining wall','Interior / false ceiling','Landscaping']],
-  ['Water & electricity for construction','s',['Available on site','Need to arrange','Not sure']],
+  ['Water & electricity for construction','s',['Available on site','Need to arrange']],
   ['Space for material storage / labour camp','s',['Yes','Limited','No']],
  ]},
- {id:'interior',ic:'🛋️',name:'Interior Design',d:'Furniture, false ceiling, finishes',q:[
-  ['Spaces to design','c',['Living','Bedrooms','Kitchen (modular)','Bathrooms','Office / reception','Shop / showroom','Restaurant / café','Hotel rooms']],
-  ['Style','s',['Modern','Classic','Rustic / wooden','Minimal','Mixed']],
-  ['Items needed','c',['Modular kitchen','Wardrobes','TV unit','False ceiling','Wall panelling','Lighting design','Furniture','Curtains / blinds','Flooring change']],
-  ['Room sizes / photos','a','Rough sizes or share photos in step 3'],
+ {id:'interior',fx:'Couch and lamp',ic:'🛋️',name:'Interior Design',d:'Furniture, false ceiling, finishes',q:[
+  ['Spaces to design','c',['Living','Bedrooms','Kids room','Kitchen (modular)','Bathrooms','Home theatre','Dressing / changing room','Office / reception','Shop / showroom','Restaurant / café','Hotel rooms']],
+  ['Style','s',['Modern','Classic','Rustic / wooden','Minimal','Traditional Arunachali','Mixed']],
+  ['Items needed','c',['Modular kitchen','Wardrobes','TV unit','False ceiling','Wall panelling','Lighting design','Furniture','Curtains / blinds','Flooring change','Wallpaper']],
+  ['Colour mood','s',['Light & airy','Warm & cosy','Dark & luxurious','Colourful']],
+  P('Interior'),
+  ['Room sizes / photos','a','Rough sizes or upload photos in the Sketches step'],
  ]},
- {id:'road',ic:'🛣️',name:'Road & Infrastructure Design / DPR',d:'Alignment, L/X-sections, estimate, DPR',q:[
+ {id:'road',fx:'Motorway',ic:'🛣️',name:'Road & Infrastructure Design / DPR',d:'Alignment, L/X-sections, estimate, DPR',q:[
   ['Work type','s',['New road','Widening / improvement','Internal / approach road','Bridge / culvert','Drainage','Protection work (wall / breast wall)','Stadium / ground development','Other infrastructure']],
   ['Road length / work extent','t','e.g. 4.2 km'],
   ['Scheme / department','t','e.g. PMGSY, PWD, RWD, NEC, SIDF'],
@@ -299,7 +418,7 @@ const SERVICES=[
   ['Outputs needed','c',['Survey (LiDAR/DGPS)','Alignment plan','L-section','Cross-sections','Cross-drainage design','Earthwork quantities','Detailed estimate / BOQ','Full DPR','Department-format drawings']],
   ['Submission deadline','t','Date or "urgent"'],
  ]},
- {id:'water',ic:'💧',name:'Water Supply & Drainage',d:'Gravity schemes, tanks, pipelines',q:[
+ {id:'water',fx:'Droplet',ic:'💧',name:'Water Supply & Drainage',d:'Gravity schemes, tanks, pipelines',q:[
   ['Work type','c',['Source development (stream / spring)','Gravity water supply','Pumping scheme','Storage tank / reservoir','Pipeline layout','Rainwater harvesting','Drainage / storm water','Septic / sewage']],
   ['Water source','s',['Stream / river','Spring','Borewell','Rainwater','Municipal / PHED line','Not identified']],
   ['Households / people to serve','t','e.g. 120 households'],
@@ -307,49 +426,71 @@ const SERVICES=[
   ['Height difference (if known)','t','e.g. source 60 m above village'],
   ['Outputs needed','c',['Feasibility study','Hydraulic design','Drawings','Estimate / BOQ','Flow simulation','DPR']],
  ]},
- {id:'approval',ic:'📑',name:'Estimate, BOQ & Approvals',d:'Costing, building permission drawings',q:[
+ {id:'approval',fx:'Page facing up',ic:'📑',name:'Estimate, BOQ & Approvals',d:'Costing, building permission drawings',q:[
   ['What do you need?','c',['Detailed estimate / BOQ','Valuation report','Building permission drawings','Completion / occupancy drawings','Bank loan estimate','Rate analysis']],
   ['Authority / purpose','t','e.g. Town Planning, Municipal Council, bank name'],
   ['Drawings available?','s',['Yes','No','Partly']],
  ]},
- {id:'visual',ic:'🎬',name:'3D Views, Walkthrough & Drone Media',d:'Renders, videos, 3D scans',q:[
+ {id:'visual',fx:'Movie camera',ic:'🎬',name:'3D Views, Walkthrough & Drone Media',d:'Renders, videos, 3D scans',q:[
   ['Required','c',['3D exterior renders','3D interior renders','Walkthrough video','Drone photos','Drone video (marked / edited)','3D point-cloud scan to view on phone']],
   ['Purpose','s',['Client presentation','Department submission','Marketing / sale','Progress monitoring','Personal']],
   ['Video length / number of views','t','e.g. 2-minute video, 6 renders'],
+  ['Colours / mood for 3D','t','e.g. white & wood, evening lights'],
  ]},
- {id:'supply',ic:'📦',name:'Materials & Government Supply',d:'Building materials, electrical, stationery',q:[
+ {id:'supply',fx:'Package',ic:'📦',name:'Materials & Government Supply',d:'Building materials, electrical, stationery',q:[
   ['Items needed','c',['Cement','Steel / TMT bars','Bricks / blocks','Sand / aggregate','Electrical goods','Plumbing items','Stationery','Office supplies','Other (write below)']],
   ['Quantity / item list','a','List items and quantities'],
   ['Supply type','s',['Private purchase','Government order / GeM','Tender supply']],
   ['Delivery location & date','t',''],
  ]},
- {id:'other',ic:'✳️',name:'Other / Not sure',d:'Tell us in your own words',q:[
+ {id:'other',fx:'Sparkles',ic:'✳️',name:'Other / Not sure',d:'Tell us in your own words — we guide you',q:[
   ['Describe what you need','a','Explain your idea — we will guide you'],
  ]}
 ];
-$('svcList').innerHTML=SERVICES.map(s=>`<label><input type="checkbox" name="svc" value="${s.id}"><span class="ic">${s.ic}</span><div><b>${esc(s.name)}</b><span>${esc(s.d)}</span></div></label>`).join('');
+/* realistic 3D icons (Microsoft Fluent, open licence) with emoji fallback */
+const FX=n=>`https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/${encodeURIComponent(n)}/3D/${n.toLowerCase().replace(/ /g,'_')}_3d.png`;
+const fxImg=(n,alt)=>`<img src="${FX(n)}" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('${alt||''}'))">`;
+$('svcList').innerHTML=SERVICES.map(s=>`<label><input type="checkbox" name="svc" value="${s.id}"><span class="ic">${fxImg(s.fx,s.ic)}</span><div><b>${esc(s.name)}</b><span>${esc(s.d)}</span></div></label>`).join('');
 
 function chosen(){return [...document.querySelectorAll('input[name=svc]:checked')].map(i=>SERVICES.find(s=>s.id===i.value))}
+const hasGuide=o=>o.some(x=>/not sure|advise|guide/i.test(x));
+const LVL=[['Low','economy'],['Medium','standard'],['High','premium']];
 function fieldHTML(sid,i,[label,type,opt]){
   const id=`q_${sid}_${i}`;
-  if(type==='c') return `<label class="f">${esc(label)}</label><div class="chips" style="margin:-6px 0 13px">${opt.map(o=>`<label><input type="checkbox" name="${id}" value="${esc(o)}">${esc(o)}</label>`).join('')}</div>`;
-  if(type==='s') return `<label class="f">${esc(label)}<select id="${id}"><option value="">Select…</option>${opt.map(o=>`<option>${esc(o)}</option>`).join('')}</select></label>`;
+  if(type==='h') return `<div class="qh">${opt?fxImg(opt,''):''}${esc(label)}</div>`;
+  if(type==='p') return `<label class="f">${esc(label)}</label><div class="lvl">${LVL.map(([a,b])=>`<label><input type="radio" name="${id}" value="${a} (${b})">${a}<small>${b}</small></label>`).join('')}<label class="g"><input type="radio" name="${id}" value="${GUIDE}">Guide me</label></div>`;
+  if(type==='c'){const o=hasGuide(opt)?opt:[...opt,GUIDE];return `<label class="f">${esc(label)}</label><div class="chips" style="margin:-6px 0 13px">${o.map(x=>`<label><input type="checkbox" name="${id}" value="${esc(x)}">${esc(x)}</label>`).join('')}</div>`}
+  if(type==='s'){const o=hasGuide(opt)?opt:[...opt,GUIDE];return `<label class="f">${esc(label)}<select id="${id}"><option value="">Select…</option>${o.map(x=>`<option>${esc(x)}</option>`).join('')}</select></label>`}
   if(type==='a') return `<label class="f">${esc(label)}<textarea id="${id}" rows="3" placeholder="${esc(opt||'')}"></textarea></label>`;
-  return `<label class="f">${esc(label)}<input id="${id}" placeholder="${esc(opt||'')}"></label>`;
+  return `<label class="f">${esc(label)}<input id="${id}" placeholder="${esc(opt||'')}"></label><label class="guide"><input type="checkbox" id="${id}_g"> Don't know — let M/s Lee Enterprise find out</label>`;
+}
+function getAns(id,type){
+  if(type==='c')return [...document.querySelectorAll(`input[name="${id}"]:checked`)].map(x=>x.value);
+  if(type==='p'){const x=document.querySelector(`input[name="${id}"]:checked`);return x?x.value:''}
+  let v=$(id)?$(id).value.trim():'';
+  if(type==='t'&&$(id+'_g')&&$(id+'_g').checked)v=v?v+' ('+GUIDE+')':GUIDE;
+  return v;
+}
+function setAns(id,type,v){
+  if(type==='c'){document.querySelectorAll(`input[name="${id}"]`).forEach(x=>x.checked=v.includes(x.value));return}
+  if(type==='p'){document.querySelectorAll(`input[name="${id}"]`).forEach(x=>x.checked=x.value===v);return}
+  if(type==='t'&&String(v).includes(GUIDE)){if($(id+'_g'))$(id+'_g').checked=true;v=String(v).replace(' ('+GUIDE+')','').replace(GUIDE,'')}
+  if($(id))$(id).value=v;
 }
 let builtFor='';
 function buildDyn(){
   const ch=chosen(), key=ch.map(s=>s.id).join(',');
   if(key===builtFor) return; const old=collectSections(); builtFor=key;
-  $('dyn').innerHTML=ch.map(s=>`<div class="card"><h3><i>${s.ic}</i>${esc(s.name)}</h3>${s.q.map((q,i)=>fieldHTML(s.id,i,q)).join('')}</div>`).join('');
+  $('dyn').innerHTML=ch.map(s=>`<div class="card"><h3><i>${fxImg(s.fx,s.ic)}</i>${esc(s.name)}</h3>${s.q.map((q,i)=>fieldHTML(s.id,i,q)).join('')}</div>`).join('');
   // restore previous answers
-  old.forEach(sec=>{const s=SERVICES.find(x=>x.name===sec.title);if(!s)return;s.q.forEach((q,i)=>{const v=sec.answers[q[0]];if(v==null)return;const id=`q_${s.id}_${i}`;
-    if(q[1]==='c')document.querySelectorAll(`input[name="${id}"]`).forEach(x=>x.checked=v.includes(x.value));else if($(id))$(id).value=v})});
+  restoreSections(old);
 }
 function collectSections(){
-  return chosen().filter(Boolean).map(s=>{const answers={};s.q.forEach((q,i)=>{const id=`q_${s.id}_${i}`;let v;
-    if(q[1]==='c')v=[...document.querySelectorAll(`input[name="${id}"]:checked`)].map(x=>x.value);else v=$(id)?$(id).value.trim():'';
+  return chosen().filter(Boolean).map(s=>{const answers={};s.q.forEach((q,i)=>{if(q[1]==='h')return;const v=getAns(`q_${s.id}_${i}`,q[1]);
     if(Array.isArray(v)?v.length:v)answers[q[0]]=v});return {title:s.name,answers}});
+}
+function restoreSections(old){
+  (old||[]).forEach(sec=>{const s=SERVICES.find(x=>x.name===sec.title);if(!s)return;s.q.forEach((q,i)=>{const v=sec.answers[q[0]];if(v==null)return;setAns(`q_${s.id}_${i}`,q[1],v)})});
 }
 const checks=name=>[...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value);
 
@@ -360,6 +501,8 @@ $('sPhotos').onchange=async e=>{photos=[];$('sPrev').innerHTML='';for(const f of
 $('gpsBtn').onclick=()=>{if(!navigator.geolocation){toast('Location not available');return}toast('Getting location…');
   navigator.geolocation.getCurrentPosition(p=>{$('sGps').value=`https://maps.google.com/?q=${p.coords.latitude.toFixed(6)},${p.coords.longitude.toFixed(6)}`;toast('Location added')},()=>toast('Could not get location — paste a Maps link instead'),{enableHighAccuracy:true,timeout:15000})};
 
+let sketches=[];
+$('kPhotos').onchange=async e=>{sketches=[];$('kPrev').innerHTML='';for(const f of [...e.target.files].slice(0,8)){try{const d=await shrink(f);sketches.push(d);$('kPrev').insertAdjacentHTML('beforeend',`<img src="${d}" alt="">`)}catch(err){}}};
 /* ---------- steps ---------- */
 const NAMES=['You','Services','Site','Details','Budget','Submit'];
 $('stepNames').innerHTML=NAMES.map(n=>`<span>${n}</span>`).join('');
@@ -389,9 +532,10 @@ function gather(){
   return {
     client:{name:$('cName').value.trim(),phone:$('cPhone').value.trim(),email:$('cEmail').value.trim(),type:$('cType').value,org:$('cOrg').value.trim(),designation:$('cDesig').value.trim(),address:$('cAddr').value.trim(),contactPref:$('cPref').value},
     services:chosen().map(s=>s.name),
-    site:{location:$('sLoc').value.trim(),district:$('sDist').value,gps:$('sGps').value.trim(),area:$('sArea').value.trim(),areaUnit:$('sUnit').value,terrain:$('sTerrain').value,docs:checks('docs').join(', '),ownership:$('sOwn').value,access:$('sAccess').value,existing:checks('existing').join(', '),utilities:checks('util').join(', '),notes:$('sNotes').value.trim()},
+    site:{location:$('sLoc').value.trim(),district:$('sDist').value,gps:$('sGps').value.trim(),area:$('sArea').value.trim(),areaUnit:$('sUnit').value,terrain:$('sTerrain').value,docs:checks('docs').join(', '),ownership:$('sOwn').value,access:$('sAccess').value,existing:checks('existing').join(', '),utilities:checks('util').join(', '),notes:$('sNotes').value.trim(),areaUnknown:$('sAreaG').checked,dims:$('sDim').value.trim(),roadSide:$('sRoad').value,roadWidth:$('sRoadW').value.trim(),neighbours:Object.fromEntries(['North','South','East','West'].map(d=>[d,[$('nb'+d).value,$('nb'+d+'T').value.trim()].filter(Boolean).join(' — ')]))},
     sections:collectSections(),
     budget:{range:$('bRange').value,funding:$('bFund').value,start:$('bStart').value,finish:$('bFinish').value,priority:checks('prio').join(', '),source:$('bSrc').value,notes:$('bNotes').value.trim()},
+    extra:{notes:$('kNotes').value.trim(),guideAll:$('kGuide').checked},
   };
 }
 function rows(o){return Object.entries(o).filter(([k,v])=>Array.isArray(v)?v.length:v).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(Array.isArray(v)?v.join(', '):v)}</td></tr>`).join('')}
@@ -399,10 +543,11 @@ function renderReview(){
   const g=gather();
   $('review').innerHTML=`<h4>You</h4><table>${rows({Name:g.client.name,Phone:g.client.phone,Email:g.client.email,Type:g.client.type,Organisation:g.client.org})}</table>
    <h4>Services</h4><p>${esc(g.services.join(', '))}</p>
-   <h4>Site</h4><table>${rows({Location:g.site.location,District:g.site.district,Area:g.site.area?g.site.area+' '+g.site.areaUnit:'',Terrain:g.site.terrain,Documents:g.site.docs})}</table>
+   <h4>Site</h4><table>${rows({Location:g.site.location,District:g.site.district,Area:g.site.areaUnknown?'Not known — Lee Enterprise to survey':(g.site.area?g.site.area+' '+g.site.areaUnit:''),'Plot size':g.site.dims,Road:g.site.roadSide,Terrain:g.site.terrain,Documents:g.site.docs,...Object.fromEntries(Object.entries(g.site.neighbours).map(([k,v])=>[k+' side',v]))})}</table>
    ${g.sections.map(s=>`<h4>${esc(s.title)}</h4><table>${rows(s.answers)}</table>`).join('')}
    <h4>Budget & time</h4><table>${rows({Budget:g.budget.range,Start:g.budget.start,Deadline:g.budget.finish,Priority:g.budget.priority})}</table>
-   ${photos.length?`<h4>Photos</h4><p>${photos.length} attached</p>`:''}
+   ${g.extra.notes||g.extra.guideAll?`<h4>Your ideas</h4><table>${rows({'Additional information':g.extra.notes,'Guidance':g.extra.guideAll?'Please guide me in every item':''})}</table>`:''}
+   ${photos.length||sketches.length?`<h4>Attachments</h4><p>${photos.length} site photo(s), ${sketches.length} sketch / reference photo(s) — all will be printed in your PDF</p>`:''}
    <p style="margin-top:10px"><a href="#" onclick="show(0);return false">✎ Edit answers</a></p>`;
 }
 
@@ -410,13 +555,13 @@ function renderReview(){
 async function submit(){
   if(!$('okCorrect').checked||!$('okPay').checked){toast('Please tick both consent boxes — payment consent is required');return}
   if(!$('sig').value.trim()){toast('Type your full name as signature');$('sig').focus();return}
-  const item={...gather(),photos,consent:{correct:true,payment:true,signature:$('sig').value.trim()}};
+  const item={...gather(),photos,sketches,revisionOf:EDIT.ref||undefined,clientCode:EDIT.code||undefined,consent:{correct:true,payment:true,signature:$('sig').value.trim()}};
   const b=$('next');b.disabled=true;b.textContent='Submitting… (making your PDF)';
   try{
     if(!server()) throw new Error('Server not set');
     const r=await fetch(server(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'briefAdd',item}),redirect:'follow'});
     const j=await r.json(); if(!j.ok) throw new Error(j.error||'Server error');
-    done(j.ref,j.pdf,item,j.code);
+    done(j.ref,j.pdf,item,j.code||EDIT.code,j.rev);
   }catch(e){
     toast('Could not submit: '+e.message+'. You can send it on WhatsApp instead.');
     b.disabled=false;b.textContent='Submit requirement ✓';
@@ -424,10 +569,11 @@ async function submit(){
     $('next').insertAdjacentHTML('afterend',`<a class="btn bw" target="_blank" rel="noopener" href="https://wa.me/${OWNER_WA}?text=${encodeURIComponent(t)}">WhatsApp</a>`);
   }
 }
-function done(ref,pdf,item,code){
+function done(ref,pdf,item,code,rev){
   try{localStorage.removeItem('lee_brief')}catch(e){}
+  if(rev){document.querySelector('#doneBox h2').textContent='Corrections saved (revision '+rev+')'}
   document.querySelectorAll('.step').forEach(s=>s.classList.add('hidden'));$('navbtns').classList.add('hidden');
-  $('doneBox').classList.remove('hidden');$('dRef').textContent=ref;$('dPdf').href=pdf;
+  $('doneBox').classList.remove('hidden');$('dRef').textContent=ref;$('dPdf').href=pdf;$('dEdit').href='brief.html?edit='+encodeURIComponent(code||'');
   if(code){$('dCode').textContent=code;$('dPortal').href='work.html?code='+encodeURIComponent(code);try{localStorage.setItem('lee_ccode',JSON.stringify(code));localStorage.setItem('lee_cname',JSON.stringify(item.client.name))}catch(e){}}else{$('dCodeBox').classList.add('hidden');$('dPortal').classList.add('hidden')}
   $('dWa').href=`https://wa.me/${OWNER_WA}?text=`+encodeURIComponent(`Hello M/s Lee Enterprise, I have submitted my requirement.\nRef: ${ref}\nName: ${item.client.name}\nServices: ${item.services.join(', ')}\nPDF: ${pdf}`);
   $('dEmail').textContent=item.client.email?`A copy has been emailed to ${item.client.email}.`:'Tip: add an email next time to get a copy by email.';
@@ -436,13 +582,31 @@ function done(ref,pdf,item,code){
 
 /* ---------- draft save ---------- */
 function saveDraft(){try{localStorage.setItem('lee_brief',JSON.stringify({g:gather(),svc:chosen().map(s=>s.id)}))}catch(e){}}
-(function load(){try{const d=JSON.parse(localStorage.getItem('lee_brief')||'null');if(!d)return;const g=d.g;
-  [['cName',g.client.name],['cPhone',g.client.phone],['cEmail',g.client.email],['cOrg',g.client.org],['cDesig',g.client.designation],['cAddr',g.client.address],['sLoc',g.site.location],['sGps',g.site.gps],['sArea',g.site.area],['sNotes',g.site.notes],['bNotes',g.budget.notes]].forEach(([id,v])=>{if(v)$(id).value=v});
-  [['cType',g.client.type],['cPref',g.client.contactPref],['sDist',g.site.district],['sUnit',g.site.areaUnit],['sTerrain',g.site.terrain],['sOwn',g.site.ownership],['sAccess',g.site.access],['bRange',g.budget.range],['bFund',g.budget.funding],['bSrc',g.budget.source]].forEach(([id,v])=>{if(v)$(id).value=v});
+function fillForm(d){const g=d.g;
+  [['cName',g.client.name],['cPhone',g.client.phone],['cEmail',g.client.email],['cOrg',g.client.org],['cDesig',g.client.designation],['cAddr',g.client.address],['sLoc',g.site.location],['sGps',g.site.gps],['sArea',g.site.area],['sNotes',g.site.notes],['bNotes',g.budget.notes],['sDim',g.site.dims],['sRoadW',g.site.roadWidth],['kNotes',g.extra&&g.extra.notes]].forEach(([id,v])=>{if(v)$(id).value=v});
+  [['cType',g.client.type],['cPref',g.client.contactPref],['sDist',g.site.district],['sUnit',g.site.areaUnit],['sTerrain',g.site.terrain],['sOwn',g.site.ownership],['sAccess',g.site.access],['bRange',g.budget.range],['bFund',g.budget.funding],['bSrc',g.budget.source],['sRoad',g.site.roadSide]].forEach(([id,v])=>{if(v)$(id).value=v});
   document.querySelectorAll('input[name=svc]').forEach(x=>x.checked=d.svc.includes(x.value));
-}catch(e){}})();
+  const setC=(name,str)=>{const a=String(str||'').split(', ');document.querySelectorAll(`input[name="${name}"]`).forEach(x=>x.checked=a.includes(x.value))};
+  setC('docs',g.site.docs);setC('existing',g.site.existing);setC('util',g.site.utilities);setC('prio',g.budget.priority);
+  if(g.site.areaUnknown)$('sAreaG').checked=true;if(g.extra&&g.extra.guideAll)$('kGuide').checked=true;
+  if(g.site.neighbours)['North','South','East','West'].forEach(dd=>{const v=g.site.neighbours[dd]||'';const [a,...b]=v.split(' — ');if(NB.includes(a)){$('nb'+dd).value=a;$('nb'+dd+'T').value=b.join(' — ')}else $('nb'+dd+'T').value=v});
+  if(g.sections){buildDyn();restoreSections(g.sections)}
+}
+const EDIT={};
+(function load(){try{const d=JSON.parse(localStorage.getItem('lee_brief')||'null');if(d)fillForm(d)}catch(e){}})();
+(async function editMode(){
+  const code=new URLSearchParams(location.search).get('edit');if(!code)return;
+  try{const r=await fetch(server(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'briefGet',clientCode:code})});const j=await r.json();
+    if(!j.ok)throw new Error(j.error);EDIT.ref=j.ref;EDIT.code=code.toUpperCase();
+    const it=j.item;fillForm({g:it,svc:SERVICES.filter(s=>(it.services||[]).includes(s.name)).map(s=>s.id)});
+    if(it.consent&&it.consent.signature)$('sig').value=it.consent.signature;
+    document.querySelector('header h1, .hero h1, h1').insertAdjacentHTML('afterend',`<div class="note" style="margin-top:8px">✎ Editing <b>${esc(j.ref)}</b> — change anything, then submit again. Photos already sent are kept; add new ones if needed.</div>`);
+    toast('Your answers are loaded — edit and submit again');
+  }catch(e){toast('Could not load your form: '+e.message)}
+})();
 addEventListener('change',saveDraft);
 const pre=new URLSearchParams(location.search).get('service');if(pre){const x=document.querySelector(`input[name=svc][value="${pre}"]`);if(x)x.checked=true}
+document.querySelectorAll('img[data-fx]').forEach(i=>{i.src=FX(i.dataset.fx);i.onerror=()=>i.remove()});
 show(0);
 </script>
 </body>
