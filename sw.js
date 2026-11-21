@@ -1,6 +1,6 @@
 // Lee Enterprise — always show the newest website; use the saved copy only when offline.
-const C='lee-v4';
-const FILES=['./','./index.html','./expenses.html','./work.html','./manager.html','./app.html','./config.js','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
+const C='lee-v5';
+const FILES=['./','./index.html','./expenses.html','./work.html','./manager.html','./app.html','./brief.html','./viewer.html','./config.js','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(FILES)).catch(()=>{}));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{

@@ -86,7 +86,7 @@ function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).se
 function today_() { return Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'); }
 function fmtDate_(v) { return v instanceof Date ? Utilities.formatDate(v, TZ, 'yyyy-MM-dd') : String(v || ''); }
 function newId_(prefix) { return prefix + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 100); }
-function clientCode_() { const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
+function clientCode_() { const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 8; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
 
 function rows_(name) {
   const sh = sheet_(name), n = sh.getLastRow() - 1;
@@ -138,6 +138,11 @@ function doPost(e) {
       case 'clientMsg': return json_(clientMessage_(q.clientCode, q.name, q.text, q.photo));
       // AI manager
       case 'ai':        need(owner, 'Owner key required'); return json_(ai_(q.messages, q.photo));
+      default: {
+        // Client requirement form & quotations (Brief.gs)
+        const br = typeof briefRoute_ === 'function' ? briefRoute_(q, owner) : null;
+        if (br) return json_(br);
+      }
     }
     return json_({ ok: false, error: 'Unknown action' });
   } catch (err) {

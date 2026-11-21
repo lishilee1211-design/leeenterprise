@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>M/s Lee Enterprise — 3D Viewer</title>
+<meta name="robots" content="noindex">
+<style>
+/* Layout: full-bleed 3D scan stage between a slim top bar and a bottom control dock; library and settings rise as a sheet */
+:root{
+  --bg:#eef1f3; --panel:#ffffff; --ink:#141a1f; --muted:#5a6670; --line:#d3dade;
+  --accent:#c2560f; --accent-ink:#ffffff; --danger:#b42318; --ok:#1f7a4d;
+  --stage:#0b0f12; --stage-ink:#e6edf1; --stage-muted:#8d9aa3; --stage-glass:rgba(11,15,18,.74);
+  --f-ui:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"Roboto Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0f1418; --panel:#161d22; --ink:#e5ebef; --muted:#93a0a9; --line:#28333b;
+  --accent:#f08a3a; --accent-ink:#1b0d03; --danger:#f97066; --ok:#4cc38a; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.4 var(--f-ui);overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+[hidden]{display:none!important}
+.app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.gut{padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.bar{background:var(--panel);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar-in{display:flex;align-items:center;gap:10px;padding-block:9px;min-width:0}
+.mark{display:flex;align-items:center;gap:8px;font-weight:700;white-space:nowrap}
+.mark svg{width:24px;height:24px;flex:none}
+.mark span{font-size:15px}
+.pick{flex:1;min-width:0;display:flex}
+.pick select{width:100%;min-width:0;height:38px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-weight:500}
+.btn{height:38px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.5}
+.btn.icon{width:38px;padding:0}
+.btn svg{width:18px;height:18px}
+
+.stage{position:relative;background:var(--stage);overflow:hidden;touch-action:none;min-height:0}
+.stage canvas{display:block;width:100%;height:100%}
+.chip{position:absolute;top:12px;left:max(14px,env(safe-area-inset-left,0px));right:max(14px,env(safe-area-inset-right,0px));pointer-events:none;display:flex;flex-direction:column;gap:2px;color:var(--stage-ink)}
+.chip b{font-size:15px;font-weight:600;text-shadow:0 1px 3px #000}
+.chip small{font-family:var(--f-mono);font-size:11.5px;color:var(--stage-muted);font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000}
+.tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#f08a3a;color:#1b0d03;font:600 10px/1.6 var(--f-ui);letter-spacing:.06em;text-transform:uppercase;vertical-align:2px;text-shadow:none}
+.hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:var(--stage-glass);color:var(--stage-muted);font-size:12px;white-space:nowrap;pointer-events:none;transition:opacity .6s}
+.hint.gone{opacity:0}
+.loader{position:absolute;inset:0;display:grid;place-items:center;background:rgba(11,15,18,.6);color:var(--stage-ink);font-size:14px;text-align:center;padding:24px}
+.loader .bar2{width:200px;height:3px;border-radius:2px;background:rgba(255,255,255,.12);margin:10px auto 0;overflow:hidden}
+.loader .bar2 i{display:block;height:100%;width:0;background:#f08a3a;transition:width .2s}
+.loader .err{color:#f97066;max-width:320px;line-height:1.5}
+.readout{position:absolute;right:max(14px,env(safe-area-inset-right,0px));bottom:52px;width:min(280px,calc(100% - 28px));padding:12px 14px;border-radius:10px;background:var(--stage-glass);color:var(--stage-ink);font-family:var(--f-mono);font-size:12px;font-variant-numeric:tabular-nums;display:grid;gap:4px}
+.readout .k{color:var(--stage-muted);font-family:var(--f-ui);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.readout .big{font-size:20px;font-weight:500;color:#f08a3a}
+.readout .row{display:flex;justify-content:space-between;gap:10px}
+.readout .note{color:var(--stage-muted);font-family:var(--f-ui);font-size:11px}
+.nogl{position:absolute;inset:0;display:grid;place-items:center;padding:24px;color:var(--stage-ink);text-align:center}
+
+.dock{background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.dock-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding-block:9px}
+.grp{display:flex;align-items:center;gap:8px;min-width:0}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{height:34px;padding:0 11px;border:0;background:transparent;font-size:13px;font-weight:500;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.seg button:disabled{opacity:.35}
+.grp.size{flex:1;min-width:140px}
+.grp.size input{flex:1;accent-color:var(--accent)}
+.tool[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+.scrim{position:fixed;inset:0;background:rgba(5,8,10,.45);z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-height:88%;overflow:auto;background:var(--panel);border-radius:14px 14px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.25);padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));user-select:text;-webkit-user-select:text}
+@media (min-width:760px){.sheet{left:auto;right:16px;top:70px;bottom:16px;width:420px;max-height:none;border-radius:14px}}
+.sheet-in{display:grid;gap:16px;padding-block:18px}
+.sheet h2{margin:0;font-size:18px;font-weight:700}
+.sheet h3{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sheet p{margin:0;color:var(--muted);line-height:1.5;font-size:13.5px}
+.shead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.drop{display:grid;gap:6px;place-items:center;text-align:center;padding:20px 16px;border:1.5px dashed var(--line);border-radius:10px;background:var(--bg)}
+.drop strong{font-size:14px}
+.drop small{color:var(--muted);font-family:var(--f-mono);font-size:11.5px}
+.field{display:grid;gap:5px}
+.field label{font-size:12px;font-weight:600;color:var(--muted)}
+.field input{height:40px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);min-width:0;font-family:var(--f-mono);font-size:12.5px}
+.rowbtn{display:flex;gap:8px;flex-wrap:wrap}
+.status{font-size:13px;line-height:1.5;padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
+.status.err{color:var(--danger);border-color:currentColor}
+.status.good{color:var(--ok)}
+.list{display:grid;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--line);min-width:0;background:transparent;border-left:0;border-right:0;border-bottom:0;text-align:left;width:100%}
+.item:first-child{border-top:0}
+.item[aria-current="true"]{background:var(--bg)}
+.item .meta{flex:1;min-width:0}
+.item .meta b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .meta small{color:var(--muted);font-size:12px}
+.item .go{color:var(--accent);font-weight:600;font-size:13px}
+.empty{padding:14px;color:var(--muted);font-size:13px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar"><div class="bar-in gut">
+    <div class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#f08a3a"><circle cx="5" cy="17" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="13" cy="15" r="1.6"/><circle cx="15" cy="8" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="11" cy="5" r="1.2"/><circle cx="18" cy="18" r="1.2"/></g></svg><span id="brand">M/s Lee Enterprise · 3D</span></div>
+    <div class="pick"><select id="pick" aria-label="Choose a point cloud"></select></div>
+    <button class="btn icon" id="openLib" aria-label="Scans and settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+  </div></header>
+  <main class="stage" id="stage">
+    <div class="chip"><b id="cname">Loading…</b><small id="cstats"></small></div>
+    <div class="hint" id="hint">Drag to orbit · pinch to zoom · two fingers to pan</div>
+    <div class="readout" id="readout" hidden></div>
+    <div class="loader" id="loader" hidden><div><div id="ltext">Loading point cloud…</div><div class="bar2" id="lbarwrap"><i id="lbar"></i></div></div></div>
+  </main>
+  <footer class="dock"><div class="dock-in gut">
+    <div class="grp"><span class="lbl">Colour</span>
+      <div class="seg"><button id="mRgb" aria-pressed="true">RGB</button><button id="mHeight" aria-pressed="false">Height</button><button id="mMono" aria-pressed="false">Mono</button></div></div>
+    <div class="grp"><span class="lbl">View</span>
+      <div class="seg"><button id="vIso" aria-pressed="false">3D</button><button id="vTop" aria-pressed="false">Top</button><button id="vFront" aria-pressed="false">Front</button><button id="vSide" aria-pressed="false">Side</button></div></div>
+    <div class="grp size"><label class="lbl" for="psize">Size</label><input type="range" id="psize" min="0.2" max="4" step="0.05" value="1"></div>
+    <button class="btn tool" id="measure" aria-pressed="false">Measure</button>
+  </div></footer>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<section class="sheet" id="sheet" hidden><div class="sheet-in gut">
+  <div class="shead"><h2>Scans</h2><button class="btn" id="closeSheet">Close</button></div>
+
+  <label class="drop" for="file"><strong>Open a file on this phone</strong><small>LAS · PLY · PCD · XYZ · TXT · CSV · PTS</small><input type="file" id="file" hidden></label>
+  <button class="btn primary" id="openFileBtn">Open file</button>
+
+  <h3 id="libTitle">Online library</h3>
+  <div class="list" id="plist"></div>
+  <div class="status" id="libStatus" hidden></div>
+
+  <h3>Library link</h3>
+  <p>Paste the link to your <code>scans.json</code> list. Your surveyor or company gives you this link.</p>
+  <div class="field"><label for="libUrl">scans.json link</label><input id="libUrl" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://yourname.github.io/scans/scans.json"></div>
+  <div class="rowbtn"><button class="btn" id="saveLib">Save and load</button><button class="btn" id="resetLib">Use default</button></div>
+</div></section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>window.PS_CONFIG={appName:"M/s Lee Enterprise · 3D",maxPoints:3000000};</script>
+<script src="config.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var CONFIG=window.PS_CONFIG||{};
+var NATIVE=location.host==='appassets.androidplatform.net';
+var MAX_POINTS=CONFIG.maxPoints||3000000;
+var fmtN=function(n){return Math.round(n).toLocaleString('en-US')};
+var fix=function(v,d){return v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})};
+var tick=function(){return new Promise(function(r){setTimeout(r,0)})};
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+if(CONFIG.appName){$('#brand').textContent=CONFIG.appName;document.title=CONFIG.appName}
+
+/* ---------- point buffer + finalize (thin, centre, convert to 3D view space) ---------- */
+function PB(hasColor){this.n=0;this.cap=1<<16;this.p=new Float64Array(this.cap*3);this.hasColor=hasColor;this.c=hasColor?new Float32Array(this.cap*3):null}
+PB.prototype.push=function(x,y,z,r,g,b){
+  if(this.n===this.cap){this.cap*=2;var np=new Float64Array(this.cap*3);np.set(this.p);this.p=np;if(this.c){var nc=new Float32Array(this.cap*3);nc.set(this.c);this.c=nc}}
+  var i=this.n*3;this.p[i]=x;this.p[i+1]=y;this.p[i+2]=z;if(this.c){this.c[i]=r;this.c[i+1]=g;this.c[i+2]=b}this.n++;
+};
+function finalize(P,name){
+  var n=P.n;if(!n)throw new Error('No points were found in this file.');
+  var hasColor=P.hasColor,cmax=0,cmin=0,i,k,a,j;
+  if(hasColor){for(i=0;i<n*3;i++){var c=P.c[i];if(c>cmax)cmax=c;if(c<cmin)cmin=c}if(cmin<0||cmax===0)hasColor=false}
+  var cs=!hasColor?1:cmax<=1?255:cmax>255?1/256:1;
+  var keep=Math.min(n,MAX_POINTS),step=n/keep;
+  var mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity];
+  for(k=0;k<keep;k++){j=Math.floor(k*step)*3;for(a=0;a<3;a++){var v=P.p[j+a];if(v<mn[a])mn[a]=v;if(v>mx[a])mx[a]=v}}
+  var ct=[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2],rz=(mx[2]-mn[2])||1;
+  var pos=new Float32Array(keep*3),hz=new Float32Array(keep),col=hasColor?new Uint8Array(keep*3):null;
+  for(k=0;k<keep;k++){j=Math.floor(k*step)*3;var o=k*3;
+    pos[o]=P.p[j]-ct[0];pos[o+1]=P.p[j+2]-ct[2];pos[o+2]=-(P.p[j+1]-ct[1]);hz[k]=(P.p[j+2]-mn[2])/rz;
+    if(col)for(a=0;a<3;a++){var cv=P.c[j+a]*cs;col[o+a]=cv<0?0:cv>255?255:cv}}
+  return {name:name,count:keep,source:P.sourceCount||n,min:mn,max:mx,ct:ct,hasColor:hasColor,pos:pos,hz:hz,col:col};
+}
+
+/* ---------- parsers (input: File or Blob with .name) ---------- */
+async function parseText(file,prog){
+  var dec=new TextDecoder(),CH=8<<20,rest='',P=null,ci=-1;
+  function line(t){
+    t=t.trim();if(!t||t[0]==='#'||t[0]==='/')return;
+    var f=t.split(/[\s,;]+/);if(f.length<3)return;
+    var x=+f[0],y=+f[1],z=+f[2];if(f[0]===''||!isFinite(x)||!isFinite(y)||!isFinite(z))return;
+    if(!P){ci=f.length>=7?4:f.length===6?3:-1;P=new PB(ci>=0)}
+    if(ci>=0)P.push(x,y,z,+f[ci]||0,+f[ci+1]||0,+f[ci+2]||0);else P.push(x,y,z);
+  }
+  for(var off=0;off<file.size;off+=CH){
+    var buf=await file.slice(off,off+CH).arrayBuffer(),txt=rest+dec.decode(buf,{stream:off+CH<file.size}),ls=txt.split('\n');
+    rest=ls.pop();for(var i=0;i<ls.length;i++)line(ls[i]);
+    prog(Math.min(1,(off+CH)/file.size));await tick();
+  }
+  line(rest);if(!P)throw new Error('No rows with X Y Z numbers were found.');
+  return P;
+}
+var PLY_T={char:['Int8',1],int8:['Int8',1],uchar:['Uint8',1],uint8:['Uint8',1],short:['Int16',2],int16:['Int16',2],ushort:['Uint16',2],uint16:['Uint16',2],int:['Int32',4],int32:['Int32',4],uint:['Uint32',4],uint32:['Uint32',4],float:['Float32',4],float32:['Float32',4],double:['Float64',8],float64:['Float64',8]};
+async function parsePLY(file,prog){
+  var buf=await file.arrayBuffer(),u8=new Uint8Array(buf);
+  var head=new TextDecoder('latin1').decode(u8.subarray(0,Math.min(u8.length,65536)));
+  var he=head.indexOf('end_header');if(he<0)throw new Error('PLY header not found.');
+  var start=he+10;while(start<u8.length&&u8[start]!==10)start++;start++;
+  var fmt='ascii',N=0,props=[],cur=null,first=null;
+  head.slice(0,he).split(/\r?\n/).forEach(function(l){var w=l.trim().split(/\s+/);
+    if(w[0]==='format')fmt=w[1];
+    else if(w[0]==='element'){cur=w[1];if(!first)first=cur;if(cur==='vertex')N=+w[2]}
+    else if(w[0]==='property'&&cur==='vertex'){if(w[1]==='list')throw new Error('PLY vertex lists are not supported.');props.push({t:w[1],name:w[2]})}});
+  if(first!=='vertex')throw new Error('This PLY file does not start with vertex data.');
+  var ix={};props.forEach(function(p,i){ix[p.name]=i});
+  if(ix.x==null||ix.y==null||ix.z==null)throw new Error('PLY has no x, y, z properties.');
+  var cr=ix.red!=null?['red','green','blue']:ix.r!=null?['r','g','b']:ix.diffuse_red!=null?['diffuse_red','diffuse_green','diffuse_blue']:null;
+  var step=Math.max(1,N/MAX_POINTS),P=new PB(!!cr),i,k;
+  if(fmt==='ascii'){
+    var ls=new TextDecoder().decode(u8.subarray(start)).split('\n');
+    for(k=0;;k++){i=Math.floor(k*step);if(i>=N||i>=ls.length)break;var f=ls[i].trim().split(/\s+/);
+      if(cr)P.push(+f[ix.x],+f[ix.y],+f[ix.z],+f[ix[cr[0]]],+f[ix[cr[1]]],+f[ix[cr[2]]]);else P.push(+f[ix.x],+f[ix.y],+f[ix.z]);
+      if(k%200000===0){prog(i/N);await tick()}}
+  }else{
+    var le=fmt==='binary_little_endian',dv=new DataView(buf),offs=[],stride=0;
+    props.forEach(function(p){var t=PLY_T[p.t];if(!t)throw new Error('Unknown PLY type '+p.t);offs.push(stride);p.g='get'+t[0];stride+=t[1]});
+    var rd=function(b,q){return dv[props[q].g](b+offs[q],le)};
+    for(k=0;;k++){i=Math.floor(k*step);if(i>=N)break;var b=start+i*stride;if(b+stride>buf.byteLength)break;
+      if(cr)P.push(rd(b,ix.x),rd(b,ix.y),rd(b,ix.z),rd(b,ix[cr[0]]),rd(b,ix[cr[1]]),rd(b,ix[cr[2]]));else P.push(rd(b,ix.x),rd(b,ix.y),rd(b,ix.z));
+      if(k%300000===0){prog(i/N);await tick()}}
+  }
+  P.sourceCount=N;return P;
+}
+async function parsePCD(file,prog){
+  var buf=await file.arrayBuffer(),u8=new Uint8Array(buf);
+  var head=new TextDecoder('latin1').decode(u8.subarray(0,Math.min(u8.length,8192)));
+  var m=head.match(/^DATA\s+(\S+)[^\n]*\n/m);if(!m)throw new Error('PCD header has no DATA line.');
+  var hdrLen=m.index+m[0].length,mode=m[1];
+  var get=function(k){var r=head.match(new RegExp('^'+k+'\\s+(.+)$','m'));return r?r[1].trim().split(/\s+/):null};
+  var F=get('FIELDS')||get('COLUMNS')||[],S=(get('SIZE')||[]).map(Number),T=get('TYPE')||[],C=(get('COUNT')||F.map(function(){return 1})).map(Number),N=+(get('POINTS')||[0])[0];
+  var fi=function(n){return F.indexOf(n)},xi=fi('x'),yi=fi('y'),zi=fi('z'),ri=fi('rgb')>=0?fi('rgb'):fi('rgba');
+  if(xi<0||yi<0||zi<0)throw new Error('PCD has no x, y, z fields.');
+  var P=new PB(ri>=0),i,x,y,z;
+  if(mode==='ascii'){
+    var ls=new TextDecoder().decode(u8.subarray(hdrLen)).split('\n'),col=[],c=0;F.forEach(function(_,q){col.push(c);c+=C[q]});
+    var f32=new Float32Array(1),u32=new Uint32Array(f32.buffer);
+    for(i=0;i<ls.length;i++){var f=ls[i].trim().split(/\s+/);if(f.length<3)continue;
+      x=+f[col[xi]];y=+f[col[yi]];z=+f[col[zi]];if(!isFinite(x)||!isFinite(y)||!isFinite(z))continue;
+      if(ri>=0){var v=+f[col[ri]];if(T[ri]==='F'){f32[0]=v;v=u32[0]}P.push(x,y,z,(v>>16)&255,(v>>8)&255,v&255)}else P.push(x,y,z);
+      if(i%200000===0){prog(i/ls.length);await tick()}}
+  }else if(mode==='binary'){
+    var dv=new DataView(buf),off=[],st=0;F.forEach(function(_,q){off.push(st);st+=S[q]*C[q]});
+    var g=function(q){var t=T[q],s=S[q];return t==='F'?(s===8?'getFloat64':'getFloat32'):t==='U'?('getUint'+s*8):('getInt'+s*8)};
+    var gx=g(xi),gy=g(yi),gz=g(zi);
+    for(i=0;i<N;i++){var b=hdrLen+i*st;if(b+st>buf.byteLength)break;
+      x=dv[gx](b+off[xi],true);y=dv[gy](b+off[yi],true);z=dv[gz](b+off[zi],true);if(!isFinite(x)||!isFinite(y)||!isFinite(z))continue;
+      if(ri>=0){var w=dv.getUint32(b+off[ri],true);P.push(x,y,z,(w>>16)&255,(w>>8)&255,w&255)}else P.push(x,y,z);
+      if(i%300000===0){prog(i/N);await tick()}}
+  }else throw new Error('Compressed PCD is not supported. Save it as binary or ASCII PCD first.');
+  return P;
+}
+async function parseLAS(file,prog){
+  var h=new DataView(await file.slice(0,375).arrayBuffer());
+  if(String.fromCharCode(h.getUint8(0),h.getUint8(1),h.getUint8(2),h.getUint8(3))!=='LASF')throw new Error('Not a LAS file.');
+  var minor=h.getUint8(25),offData=h.getUint32(96,true),pf=h.getUint8(104);
+  if(pf&0x80)throw new Error('This file is LAZ-compressed. Export it as uncompressed LAS or PLY first.');
+  var fmt=pf&0x3f,rl=h.getUint16(105,true),n=h.getUint32(107,true);
+  if(minor>=4&&h.byteLength>=255){var big=Number(h.getBigUint64(247,true));if(big)n=big}
+  var sx=h.getFloat64(131,true),sy=h.getFloat64(139,true),sz=h.getFloat64(147,true),ox=h.getFloat64(155,true),oy=h.getFloat64(163,true),oz=h.getFloat64(171,true);
+  var co={2:20,3:28,5:28,7:30,8:30,10:30}[fmt];
+  var keep=Math.min(n,MAX_POINTS),step=n/keep,P=new PB(co!=null);
+  var per=Math.max(1,Math.floor((16<<20)/rl)),k=0;
+  for(var s=0;s<n&&k<keep;s+=per){
+    var e=Math.min(n,s+per),dv=new DataView(await file.slice(offData+s*rl,offData+e*rl).arrayBuffer());
+    while(k<keep){var i=Math.floor(k*step);if(i>=e)break;var b=(i-s)*rl;if(b+rl>dv.byteLength){k++;continue}
+      var x=dv.getInt32(b,true)*sx+ox,y=dv.getInt32(b+4,true)*sy+oy,z=dv.getInt32(b+8,true)*sz+oz;
+      if(co!=null)P.push(x,y,z,dv.getUint16(b+co,true),dv.getUint16(b+co+2,true),dv.getUint16(b+co+4,true));else P.push(x,y,z);k++}
+    prog(e/n);await tick();
+  }
+  P.sourceCount=n;return P;
+}
+async function parseFile(file,prog){
+  var name=file.name||'scan',ext=(name.split('.').pop()||'').toLowerCase(),P;
+  if(ext==='laz')throw new Error('LAZ files are compressed. Export as uncompressed LAS (for example CloudCompare → Save As → LAS) and try again.');
+  if(ext==='e57'||ext==='rcp'||ext==='rcs')throw new Error('.'+ext+' files are not supported. Export the scan as LAS, PLY or XYZ first.');
+  if(ext==='las')P=await parseLAS(file,prog);
+  else if(ext==='ply')P=await parsePLY(file,prog);
+  else if(ext==='pcd')P=await parsePCD(file,prog);
+  else P=await parseText(file,prog);
+  return finalize(P,name.replace(/\.[^.]+$/,''));
+}
+
+/* ---------- built-in sample ---------- */
+function makeSample(){
+  var P=new PB(true),rnd=Math.random,X0=431250,Y0=2843100,Z0=52,i;
+  var hz=function(x,y){return 2.2*Math.sin(x/19)+1.6*Math.cos(y/14)+0.6*Math.sin((x+y)/7)};
+  for(i=0;i<150000;i++){var x=rnd()*120,y=rnd()*80,z=hz(x,y);
+    if(Math.abs(y-40-6*Math.sin(x/25))<3.2){var g=95+rnd()*25;P.push(X0+x,Y0+y,Z0+hz(x,40)+0.05,g,g,g+4)}
+    else{var t=(z+4)/9;P.push(X0+x,Y0+y,Z0+z+rnd()*0.04,70+60*t+rnd()*30,120+50*t+rnd()*30,50+rnd()*25)}}
+  var bx=62,by=52,bw=20,bd=12,bh=8,bz=hz(bx,by)+0.1;
+  for(i=0;i<45000;i++){var u,v,px,py,pz;
+    if(rnd()<0.6){var side=Math.floor(rnd()*4);u=rnd();pz=bz+rnd()*bh;
+      if(side===0){px=bx+u*bw;py=by}else if(side===1){px=bx+u*bw;py=by+bd}else if(side===2){px=bx;py=by+u*bd}else{px=bx+bw;py=by+u*bd}
+      var win=(pz-bz)%3>1.2&&(pz-bz)%3<2.3&&(u*10)%2>0.9;P.push(X0+px,Y0+py,Z0+pz,win?60:214,win?80:200,win?96:176)}
+    else{u=rnd();v=rnd();P.push(X0+bx+u*bw,Y0+by+v*bd,Z0+bz+bh+(0.5-Math.abs(v-0.5))*5,168,62,46)}}
+  for(var t2=0;t2<26;t2++){var tx=8+rnd()*104,ty=rnd()*80;if(Math.abs(ty-40)<9||(tx>55&&tx<88&&ty>46&&ty<70)){t2--;continue}
+    var tz=hz(tx,ty),r=1.6+rnd()*1.6,th=4+rnd()*3;
+    for(i=0;i<700;i++){var a=rnd()*6.283,b=Math.acos(2*rnd()-1),rr=r*(0.75+0.25*rnd());
+      P.push(X0+tx+rr*Math.sin(b)*Math.cos(a),Y0+ty+rr*Math.sin(b)*Math.sin(a),Z0+tz+th+rr*0.85*Math.cos(b),35+rnd()*30,85+rnd()*45,30+rnd()*20)}
+    for(i=0;i<80;i++)P.push(X0+tx+(rnd()-.5)*.3,Y0+ty+(rnd()-.5)*.3,Z0+tz+rnd()*th,92,66,44)}
+  return finalize(P,'Sample site scan');
+}
+
+/* ---------- 3D viewer ---------- */
+var stage=$('#stage'),renderer=null,scene,camera,controls,cloud=null,sizeMul=1,measuring=false,picks=[],marks=[];
+try{
+  if(!window.THREE||!THREE.OrbitControls)throw new Error('3D library missing');
+  renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  stage.insertBefore(renderer.domElement,stage.firstChild);
+  scene=new THREE.Scene();scene.background=new THREE.Color(0x0b0f12);
+  camera=new THREE.PerspectiveCamera(50,1,0.1,1000);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=0.12;controls.screenSpacePanning=true;controls.rotateSpeed=0.8;
+}catch(e){renderer=null;stage.insertAdjacentHTML('beforeend','<div class="nogl">3D graphics could not start on this device. Update Android System WebView from the Play Store and try again.</div>')}
+function resize(){if(!renderer)return;var w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);else window.addEventListener('resize',resize);
+(function loop(){requestAnimationFrame(loop);if(!renderer||document.hidden)return;controls.update();renderer.render(scene,camera)})();
+
+var RAMP=[[0,[0.17,0.29,0.6]],[0.25,[0.16,0.65,0.79]],[0.5,[0.36,0.75,0.42]],[0.75,[0.91,0.77,0.28]],[1,[0.85,0.28,0.17]]];
+function ramp(t,o,k){for(var i=1;i<RAMP.length;i++)if(t<=RAMP[i][0]){var a=RAMP[i-1],b=RAMP[i],f=(t-a[0])/(b[0]-a[0]);for(var c=0;c<3;c++)o[k+c]=a[1][c]+(b[1][c]-a[1][c])*f;return}}
+
+function showCloud(pl,meta){
+  if(!renderer)return;
+  clearMeasure();
+  if(cloud){scene.remove(cloud.points);cloud.points.geometry.dispose();cloud.points.material.dispose()}
+  var n=pl.count,rg=[pl.max[0]-pl.min[0],pl.max[1]-pl.min[1],pl.max[2]-pl.min[2]];
+  var geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pl.pos,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(new Float32Array(n*3),3));
+  geo.computeBoundingSphere();
+  var area=Math.max(rg[0]*rg[1],rg[0]*rg[2],rg[1]*rg[2],1e-6),base=Math.sqrt(area/n)*1.5,diag=Math.hypot(rg[0],rg[1],rg[2])||1;
+  var pts=new THREE.Points(geo,new THREE.PointsMaterial({size:base*sizeMul,vertexColors:true,sizeAttenuation:true}));
+  scene.add(pts);
+  cloud={pl:pl,points:pts,base:base,diag:diag,units:(meta&&meta.units)||'m'};
+  camera.near=diag/3000;camera.far=diag*40;
+  $('#mRgb').disabled=!pl.hasColor;
+  setMode(pl.hasColor?'rgb':'height');setView('iso');
+  var nm=$('#cname');nm.textContent=(meta&&meta.name)||pl.name;
+  if(meta&&meta.tag){var s=document.createElement('span');s.className='tag';s.textContent=meta.tag;nm.appendChild(s)}
+  var st=fmtN(n)+' pts';if(pl.source>n)st+=' (of '+fmtN(pl.source)+')';
+  $('#cstats').textContent=st+' · '+fix(rg[0],1)+' × '+fix(rg[1],1)+' × '+fix(rg[2],1)+' '+cloud.units;
+}
+function setMode(m){
+  ['Rgb','Height','Mono'].forEach(function(k){$('#m'+k).setAttribute('aria-pressed',String(k.toLowerCase()===m))});
+  if(!cloud)return;var n=cloud.pl.count,col=cloud.points.geometry.attributes.color.array,hz=cloud.pl.hz,i;
+  if(m==='rgb'&&cloud.pl.col){var c=cloud.pl.col;for(i=0;i<n*3;i++)col[i]=c[i]/255}
+  else if(m==='height'){for(i=0;i<n;i++)ramp(hz[i],col,i*3)}
+  else{for(i=0;i<n;i++){var v=0.5+0.45*hz[i];col[i*3]=v;col[i*3+1]=v*0.97;col[i*3+2]=v*0.92}}
+  cloud.points.geometry.attributes.color.needsUpdate=true;
+}
+function setView(v){
+  if(!cloud)return;var d=cloud.diag*1.05,dir={iso:[0.9,0.75,1],top:[0,1,0.0008],front:[0,0.12,1],side:[1,0.12,0]}[v];
+  camera.position.copy(new THREE.Vector3(dir[0],dir[1],dir[2]).normalize().multiplyScalar(d));
+  camera.up.set(0,1,0);controls.target.set(0,0,0);camera.updateProjectionMatrix();controls.update();
+  ['Iso','Top','Front','Side'].forEach(function(k){$('#v'+k).setAttribute('aria-pressed',String(k.toLowerCase()===v))});
+}
+$('#mRgb').onclick=function(){setMode('rgb')};$('#mHeight').onclick=function(){setMode('height')};$('#mMono').onclick=function(){setMode('mono')};
+$('#vIso').onclick=function(){setView('iso')};$('#vTop').onclick=function(){setView('top')};$('#vFront').onclick=function(){setView('front')};$('#vSide').onclick=function(){setView('side')};
+$('#psize').oninput=function(e){sizeMul=+e.target.value;if(cloud)cloud.points.material.size=cloud.base*sizeMul};
+if(controls)controls.addEventListener('start',function(){$('#hint').classList.add('gone');['Iso','Top','Front','Side'].forEach(function(k){$('#v'+k).setAttribute('aria-pressed','false')})});
+
+/* ---------- measure ---------- */
+function orig(p){var c=cloud.pl.ct;return [p.x+c[0],-p.z+c[1],p.y+c[2]]}
+function clearMeasure(){picks=[];marks.forEach(function(m){scene.remove(m);m.geometry.dispose()});marks=[];renderReadout()}
+function renderReadout(){
+  var r=$('#readout');if(!measuring||!cloud){r.hidden=true;return}r.hidden=false;var u=cloud.units;
+  if(!picks.length){r.innerHTML='<div class="k">Measure</div><div>Tap a point to start.</div>';return}
+  var a=orig(picks[0]),h;
+  if(picks.length>1){var b=orig(picks[1]),dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],hd=Math.hypot(dx,dy);
+    h='<div class="k">Distance</div><div class="big">'+fix(Math.hypot(dx,dy,dz),3)+' '+u+'</div>'+
+      '<div class="row"><span>Horizontal</span><span>'+fix(hd,3)+'</span></div>'+
+      '<div class="row"><span>Height Δ</span><span>'+(dz>=0?'+':'')+fix(dz,3)+'</span></div>'+
+      '<div class="row"><span>Slope</span><span>'+(hd>0?fix(dz/hd*100,1)+'%':'—')+'</span></div>'+
+      '<div class="note">Tap again for a new measurement.</div>'}
+  else h='<div class="k">Point 1</div><div>E '+fix(a[0],3)+'<br>N '+fix(a[1],3)+'<br>Z '+fix(a[2],3)+'</div><div class="note">Tap a second point.</div>';
+  r.innerHTML=h;
+}
+function addMark(p){var m=new THREE.Mesh(new THREE.SphereGeometry(cloud.diag*0.004,12,8),new THREE.MeshBasicMaterial({color:0xf08a3a,depthTest:false}));m.position.copy(p);m.renderOrder=9;scene.add(m);marks.push(m)}
+if(renderer){var cv=renderer.domElement,ray=new THREE.Raycaster(),down=null;
+  cv.addEventListener('pointerdown',function(e){down={x:e.clientX,y:e.clientY,t:Date.now()}});
+  cv.addEventListener('pointerup',function(e){
+    if(!measuring||!cloud||!down)return;if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>8||Date.now()-down.t>500)return;
+    var rc=cv.getBoundingClientRect(),v=new THREE.Vector2((e.clientX-rc.left)/rc.width*2-1,-(e.clientY-rc.top)/rc.height*2+1);
+    ray.params.Points.threshold=cloud.base*sizeMul*1.2;ray.setFromCamera(v,camera);
+    var hit=ray.intersectObject(cloud.points)[0];if(!hit)return;
+    if(picks.length>=2)clearMeasure();
+    picks.push(hit.point.clone());addMark(hit.point);
+    if(picks.length===2){var ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints(picks),new THREE.LineBasicMaterial({color:0xf08a3a,depthTest:false}));ln.renderOrder=9;scene.add(ln);marks.push(ln)}
+    renderReadout();
+  });
+}
+$('#measure').onclick=function(){measuring=!measuring;this.setAttribute('aria-pressed',String(measuring));if(!measuring)clearMeasure();renderReadout()};
+
+/* ---------- sources: sample, library, local files ---------- */
+var items=[{key:'sample',name:'Sample site scan',tag:'Sample',units:'m'}],cache={},current=null,libScans=[];
+function loading(on,txt,f,err){$('#loader').hidden=!on;var t=$('#ltext');t.textContent=txt||'';t.className=err?'err':'';$('#lbarwrap').hidden=!!err;$('#lbar').style.width=((f||0)*100)+'%'}
+function fillPicker(){var s=$('#pick');s.innerHTML='';items.forEach(function(it){var o=document.createElement('option');o.value=it.key;o.textContent=it.name+(it.tag==='Sample'?' (sample)':it.local?' (on phone)':'');s.appendChild(o)});if(current)s.value=current}
+function b64url(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function net(url){return NATIVE?'/remote/'+b64url(url):url}
+async function download(url,label){
+  if(url.indexOf('lee-file:')===0){ // private project file, fetched through the Lee Enterprise server with the client code
+    var P=new URLSearchParams(location.search),srv=(function(){try{var v=localStorage.getItem('lee_url');if(v)return JSON.parse(v)}catch(e){}return window.LEE_SERVER||''})();
+    loading(true,'Downloading '+label+'… (large scans take a minute)',0.1);
+    var body={action:'fileGet',id:url.slice(9)};if(P.get('code'))body.clientCode=P.get('code');else{try{body.key=JSON.parse(localStorage.getItem('lee_key')||'""')}catch(e){}}
+    var rr=await fetch(srv,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+    var jj=await rr.json();if(!jj.ok)throw new Error(jj.error||'Could not get the file.');
+    if(jj.url&&!jj.b64){return download(jj.url,label)}
+    window.__leeName=jj.name;var bin=atob(jj.b64),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr]);
+  }
+  var res=await fetch(net(url));if(!res.ok)throw new Error('The server answered '+res.status+'. Check the link.');
+  var total=+res.headers.get('content-length')||0;
+  if(!res.body){return await res.blob()}
+  var rd=res.body.getReader(),parts=[],got=0;
+  for(;;){var r=await rd.read();if(r.done)break;parts.push(r.value);got+=r.value.length;
+    loading(true,'Downloading '+label+' · '+fix(got/1048576,1)+(total?' of '+fix(total/1048576,1):'')+' MB',total?got/total:0)}
+  return new Blob(parts);
+}
+function asFile(blob,name){try{return new File([blob],name)}catch(e){blob.name=name;return blob}}
+async function openItem(key){
+  var it=items.find(function(x){return x.key===key});if(!it)return;
+  current=key;$('#pick').value=key;store.set('ps-last',it.url||null);
+  try{
+    if(!cache[key]){
+      if(key==='sample'){loading(true,'Building sample…',0);await tick();cache[key]=makeSample()}
+      else{var file=it.file;
+        if(!file){var fname=it.file_name||decodeURIComponent((it.url.split('?')[0].split('/').pop())||'scan.las');var blob=await download(it.url,it.name);if(window.__leeName)fname=window.__leeName;file=asFile(blob,fname)}
+        loading(true,'Reading '+it.name+'…',0);
+        cache[key]=await parseFile(file,function(f){loading(true,'Reading '+it.name+' · '+Math.round(f*100)+'%',f)});
+        }
+      var keys=Object.keys(cache);if(keys.length>3)delete cache[keys.find(function(k){return k!==key&&k!=='sample'})];
+    }
+    loading(true,'Building 3D view…',1);await tick();
+    showCloud(cache[key],it);loading(false);
+  }catch(e){loading(true,(e&&e.message)||'This scan could not be opened.',0,true)}
+}
+function addLocal(file,tagKey){
+  var key=tagKey||('local-'+Date.now());
+  items=items.filter(function(x){return !x.local});
+  items.push({key:key,name:file.name.replace(/\.[^.]+$/,''),file:file,local:true,units:'m'});
+  Object.keys(cache).forEach(function(k){if(k.indexOf('local-')===0||k.indexOf('shared-')===0)delete cache[k]});
+  fillPicker();openSheet(false);openItem(key);
+}
+$('#pick').onchange=function(e){openItem(e.target.value)};
+$('#file').onchange=function(e){var f=e.target.files[0];e.target.value='';if(f)addLocal(f)};
+$('#openFileBtn').onclick=function(){$('#file').click()};
+
+/* file opened from WhatsApp / Files via "Open with" (called by the Android app) */
+window.psOpenShared=async function(name,token){
+  try{loading(true,'Opening '+name+'…',0);var res=await fetch('/shared/'+token);if(!res.ok)throw new Error('The file could not be read.');
+    addLocal(asFile(await res.blob(),name),'shared-'+token)}catch(e){loading(true,e.message,0,true)}
+};
+window.psBack=function(){if(!$('#sheet').hidden){openSheet(false);return true}if(measuring){$('#measure').click();return true}return false};
+
+/* ---------- library (scans.json) ---------- */
+function libUrl(){return store.get('ps-lib')||CONFIG.libraryUrl||''}
+function libStatus(msg,kind){var s=$('#libStatus');s.hidden=!msg;s.textContent=msg||'';s.className='status'+(kind?' '+kind:'')}
+function renderLib(){
+  var L=$('#plist');L.innerHTML='';
+  if(!libUrl()){L.innerHTML='<div class="empty">No library link yet. Paste a scans.json link below, or open a file on this phone.</div>';return}
+  if(!libScans.length){L.innerHTML='<div class="empty">No scans in the library.</div>';return}
+  libScans.forEach(function(it){var b=document.createElement('button');b.className='item';if(it.key===current)b.setAttribute('aria-current','true');
+    var m=document.createElement('div');m.className='meta';var t=document.createElement('b');t.textContent=it.name;var s=document.createElement('small');s.textContent=[it.note,it.size].filter(Boolean).join(' · ')||'Tap to open';
+    m.appendChild(t);m.appendChild(s);var g=document.createElement('span');g.className='go';g.textContent='Open';b.appendChild(m);b.appendChild(g);
+    b.onclick=function(){openSheet(false);openItem(it.key)};L.appendChild(b)});
+}
+async function loadLibrary(){
+  var url=libUrl();libScans=[];items=items.filter(function(x){return !x.lib});
+  if(!url){renderLib();fillPicker();return false}
+  libStatus('Loading library…');
+  try{
+    var res=await fetch(net(url));if(!res.ok)throw new Error('The library link answered '+res.status+'.');
+    var data=JSON.parse(await res.text()),list=Array.isArray(data)?data:(data.scans||[]);
+    if(data.title)$('#libTitle').textContent=data.title;
+    libScans=list.filter(function(s){return s&&s.url}).map(function(s,i){return {key:'lib-'+i+'-'+s.url,lib:true,name:s.name||('Scan '+(i+1)),url:new URL(s.url,url).href,units:s.units||'m',note:s.note||'',size:s.size||''}});
+    items=items.concat(libScans);fillPicker();renderLib();libStatus(libScans.length+' scan'+(libScans.length===1?'':'s')+' in the library.','good');
+    return true;
+  }catch(e){renderLib();fillPicker();libStatus('Could not load the library: '+e.message,'err');return false}
+}
+$('#libUrl').value=libUrl();
+$('#saveLib').onclick=async function(){var v=$('#libUrl').value.trim();if(v&&!/^https?:\/\//i.test(v)){libStatus('The link must start with https://','err');return}store.set('ps-lib',v||null);if(await loadLibrary()&&libScans.length){openSheet(false);openItem(libScans[0].key)}};
+$('#resetLib').onclick=function(){store.set('ps-lib',null);$('#libUrl').value=libUrl();loadLibrary()};
+
+function openSheet(on){$('#sheet').hidden=!on;$('#scrim').hidden=!on;if(on)renderLib()}
+$('#openLib').onclick=function(){openSheet(true)};$('#closeSheet').onclick=function(){openSheet(false)};$('#scrim').onclick=function(){openSheet(false)};
+
+/* ---------- start ---------- */
+fillPicker();
+setTimeout(async function(){
+  resize();
+  var QP=new URLSearchParams(location.search);
+  if(QP.get('fid')||QP.get('src')){
+    var nm=QP.get('name')||'3D model';
+    items.push({key:'shared-link',name:nm,url:QP.get('fid')?'lee-file:'+QP.get('fid'):QP.get('src'),file_name:QP.get('src')?decodeURIComponent((QP.get('src').split('?')[0].split('/').pop())||'scan.las'):undefined,units:'m'});
+    fillPicker();openItem('shared-link');return;
+  }
+  var ok=await loadLibrary();
+  if(current)return;
+  var last=store.get('ps-last'),pickLib=ok&&libScans.length?(libScans.find(function(x){return x.url===last})||libScans[0]):null;
+  openItem(pickLib?pickLib.key:'sample');
+},0);
+})();
+</script>
+</body>
+</html>

@@ -104,6 +104,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff
 .owner-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .owner-nav a{font-size:13px;text-decoration:none;color:var(--navy2);background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:10px;font-weight:600}
 input[type=range]{padding:0;accent-color:var(--blue)}
+.doc{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.doc:first-child{border-top:0}
+.doc .ic{flex:0 0 46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:#eef4ff}
+.doc .ic.m{background:linear-gradient(135deg,#0a2350,#1a5fd0);color:#fff}
+.doc .mm{flex:1;min-width:0}.doc b{font-size:14.5px;display:block}
+.doc .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.st{font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:6px}
+.st.Pending{background:#fff4dd;color:#8a5a00}.st.Approved{background:#e3f6e8;color:#1d7a3a}.st.Changes{background:#fde8e8;color:#b03030}
+.fin{background:#0a2350;color:#fff}
+.decide{background:#f7f9fd;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+.lock-note{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
 @media (max-width:640px){.two{grid-template-columns:1fr}.ph h2{font-size:20px}}
 </style>
 </head>
@@ -124,15 +135,22 @@ input[type=range]{padding:0;accent-color:var(--blue)}
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1a5fd0" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
       <h2>Track your project</h2>
       <p class="muted">Enter the project code you received from M/s Lee Enterprise.</p>
-      <input id="cCode" maxlength="8" placeholder="CODE" autocomplete="off">
+      <input id="cCode" maxlength="10" placeholder="CODE" autocomplete="off">
       <button class="btn btn-primary" id="cGo" style="min-width:220px">View progress</button>
       <p class="muted" style="margin-top:14px">No code? <a href="https://wa.me/917628890089?text=Hello%2C%20please%20share%20my%20project%20code" target="_blank" rel="noopener">Ask us on WhatsApp</a></p>
     </div>
+    <div class="card" style="text-align:center">
+      <h3 style="justify-content:center">New project?</h3>
+      <p class="muted">Tell us your requirements: survey &amp; mapping, building design, construction, roads, water supply and more.</p>
+      <a class="btn btn-primary" href="brief.html" style="margin-top:12px">Fill the requirement form →</a>
+    </div>
     <div id="cView" class="hidden">
       <div class="ph" id="cHead"></div>
+      <div class="card" id="cFilesCard"><h3>Documents, drawings &amp; 3D</h3><div id="cFiles"><p class="muted">Loading…</p></div></div>
       <div class="card"><h3>Progress updates <button class="btn btn-sm btn-line" id="cRefresh">Refresh</button></h3><div class="tl" id="cTl"></div></div>
       <div class="card">
-        <h3>Your messages to us</h3>
+        <h3>🔒 Private chat with M/s Lee Enterprise</h3>
+        <p class="lock-note">Only you (with your code) and M/s Lee Enterprise can see this page and chat. Please don't share your code.</p>
         <div class="chat" id="cChat"></div>
         <label style="margin-top:12px">Your name<input id="cName" placeholder="Name"></label>
         <div class="send">
@@ -157,6 +175,7 @@ input[type=range]{padding:0;accent-color:var(--blue)}
 
     <div id="oList" class="hidden">
       <div class="owner-nav"><a href="expenses.html#owner">Expense tally</a><a href="manager.html">AI Manager</a></div>
+      <div class="card"><h3>Client requirements <span style="display:flex;gap:6px"><button class="btn btn-sm btn-line" id="rReload">Refresh</button><a class="btn btn-sm btn-line" href="brief.html" target="_blank">Open form</a></span></h3><div class="plist" id="oReqs"><p class="muted">Loading…</p></div></div>
       <div class="card"><h3>Projects <span style="display:flex;gap:6px"><button class="btn btn-sm btn-line" id="oReload">Refresh</button><button class="btn btn-sm btn-primary" id="oNew">+ New project</button></span></h3><div class="plist" id="oProjects"><p class="muted">Loading…</p></div></div>
     </div>
 
@@ -176,6 +195,45 @@ input[type=range]{padding:0;accent-color:var(--blue)}
       <label>Cover photo<input id="eCover" type="file" accept="image/*"></label>
       <label class="chk"><input type="checkbox" id="ePub"> Show this project on the public website</label>
       <div style="display:flex;gap:8px"><button class="btn btn-primary" id="eSave" style="flex:1">Save project</button><button class="btn btn-line" id="eCancel">Cancel</button></div>
+    </div>
+
+    <div id="oReq" class="hidden">
+      <button class="btn btn-line btn-sm" id="rBack" style="margin-bottom:12px">← Back</button>
+      <div class="card">
+        <h3 id="rTitle"></h3>
+        <div id="rInfo" style="font-size:14px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <a class="btn btn-sm btn-primary" id="rPdf" target="_blank" rel="noopener">📄 Requirement PDF</a>
+          <a class="btn btn-sm btn-wa" id="rCall" target="_blank" rel="noopener">WhatsApp client</a>
+          <a class="btn btn-sm btn-line" id="rTel">Call</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Status & site visit</h3>
+        <div class="two">
+          <label>Status<select id="rStatus"><option>New</option><option>Site visit scheduled</option><option>Site verified</option><option>Quoted</option><option>Accepted / Project</option><option>Not proceeding</option></select></label>
+          <label>Site verified on<input id="rVer" type="date"></label>
+        </div>
+        <label>Notes (only you see)<textarea id="rNotes" rows="2"></textarea></label>
+        <button class="btn btn-line btn-wide" id="rSave">Save status</button>
+      </div>
+      <div class="card">
+        <h3>Send quotation (after physical verification)</h3>
+        <label>Total amount (₹)<input id="qAmt" inputmode="decimal" placeholder="e.g. 85000" style="font-size:22px;font-weight:700"></label>
+        <div id="qPhases"></div>
+        <p class="muted" id="qSum" style="margin:-4px 0 12px"></p>
+        <label>Scope & notes on quotation<textarea id="qNotes" rows="3" placeholder="What is included, deliverables, exclusions…"></textarea></label>
+        <label>Valid for (days)<input id="qValid" type="number" value="30"></label>
+        <button class="btn btn-primary btn-wide" id="qSend">Make PDF &amp; email to client</button>
+        <div id="qResult" class="hidden" style="margin-top:12px">
+          <div class="demo" style="background:#e3f6e8;border-color:#bfe6c9;color:#1d6b35" id="qMsg"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-wa" id="qWa" target="_blank" rel="noopener">Send on WhatsApp</a>
+            <a class="btn btn-line" id="qPdf" target="_blank" rel="noopener">Open quotation PDF</a>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-line btn-wide" id="rProj">Client accepted → create project &amp; client code</button>
     </div>
 
     <div id="oDetail" class="hidden">
@@ -199,6 +257,20 @@ input[type=range]{padding:0;accent-color:var(--blue)}
         <div class="prevs" id="uPrev"></div>
         <label class="chk"><input type="checkbox" id="uVis" checked> Visible to client</label>
         <button class="btn btn-primary btn-wide" id="uPost">Post update</button>
+      </div>
+      <div class="card">
+        <h3>Documents, drawings &amp; 3D models (client sees these)</h3>
+        <div class="two">
+          <label>Name<input id="fName" placeholder="e.g. Topographic map R1, LiDAR point cloud"></label>
+          <label>Type<select id="fKind"><option value="doc">Document / drawing (PDF)</option><option value="model">3D model (LAS / PLY / XYZ)</option><option value="photo">Photo / render</option></select></label>
+        </div>
+        <label>Upload file (up to ~30 MB)<input id="fFile" type="file"></label>
+        <label>…or paste a link<input id="fUrl" placeholder="https://… (GitHub, Dropbox, Drive)"></label>
+        <label>Note to client<input id="fNote" placeholder="optional"></label>
+        <label class="chk"><input type="checkbox" id="fAppr"> Ask client to approve this</label>
+        <label class="chk"><input type="checkbox" id="fFinal"> This is the FINAL submission (client approval completes the project)</label>
+        <button class="btn btn-primary btn-wide" id="fAdd">Share with client</button>
+        <div id="dFiles" style="margin-top:12px"></div>
       </div>
       <div class="card"><h3>Timeline</h3><div class="tl" id="dTl"></div></div>
       <div class="card">
@@ -267,11 +339,11 @@ function head(el,p){
 }
 function timeline(el,ups,owner){
   el.innerHTML=ups.length?ups.map(u=>`<div class="tli"><div class="d">${fmt(u.date)}</div><h4>${esc(u.title)}${u.progress!=null&&u.progress!==''?`<span>${u.progress}%</span>`:''}${owner&&u.visible===false?'<span style="background:#eceff4;color:#55657e">hidden</span>':''}</h4>
-   ${u.text?`<p>${esc(u.text)}</p>`:''}${u.photos&&u.photos.length?`<div class="ph-row">${u.photos.map(s=>`<img src="${esc(s)}" onclick="zoom('${esc(s)}')" loading="lazy" alt="">`).join('')}</div>`:''}
+   ${u.text?`<p>${linkify(u.text)}</p>`:''}${u.photos&&u.photos.length?`<div class="ph-row">${u.photos.map(s=>`<img src="${esc(s)}" onclick="zoom('${esc(s)}')" loading="lazy" alt="">`).join('')}</div>`:''}
    ${owner?`<button class="btn btn-sm btn-red" style="margin-top:8px" onclick="delUpd('${u.id}')">Delete</button>`:''}</div>`).join(''):'<p class="muted">No updates yet.</p>';
 }
 function chat(el,msgs,meIs){
-  el.innerHTML=msgs.length?msgs.map(m=>`<div class="bub ${m.from===meIs?'me':'them'}"><small>${esc(m.name||m.from)} · ${fmtT(m.date)}</small>${esc(m.text)}${m.photo?`<img src="${esc(m.photo)}" onclick="zoom('${esc(m.photo)}')" alt="">`:''}</div>`).join(''):'<p class="muted">No messages yet.</p>';
+  el.innerHTML=msgs.length?msgs.map(m=>`<div class="bub ${m.from===meIs?'me':'them'}"><small>${esc(m.name||m.from)} · ${fmtT(m.date)}</small>${linkify(m.text)}${m.photo?`<img src="${esc(m.photo)}" onclick="zoom('${esc(m.photo)}')" alt="">`:''}</div>`).join(''):'<p class="muted">No messages yet.</p>';
   el.scrollTop=el.scrollHeight;
 }
 
@@ -285,7 +357,7 @@ $('cName').value=S.get('cname','');
 async function cLoad(){
   try{const j=await api({action:'client',clientCode:cCode});S.set('ccode',cCode);
     $('cEnter').classList.add('hidden');$('cView').classList.remove('hidden');
-    head($('cHead'),j.project);timeline($('cTl'),j.updates,false);chat($('cChat'),j.messages,'Client');
+    head($('cHead'),j.project);timeline($('cTl'),j.updates,false);chat($('cChat'),j.messages,'Client');loadClientFiles();
   }catch(e){toast(e.message);$('cEnter').classList.remove('hidden');$('cView').classList.add('hidden')}
 }
 $('cGo').onclick=()=>{cCode=$('cCode').value.trim().toUpperCase();if(cCode.length<4){toast('Enter your project code');return}cLoad()};
@@ -316,7 +388,7 @@ function ownerOpen(){
 });
 const K=()=>S.get('key','');
 async function showList(){
-  ['oEdit','oDetail'].forEach(id=>$(id).classList.add('hidden'));$('oList').classList.remove('hidden');
+  ['oEdit','oDetail','oReq'].forEach(id=>$(id).classList.add('hidden'));$('oList').classList.remove('hidden');loadReqs();
   try{
     const [pj,mj]=await Promise.all([api({action:'projList',key:K()}),api({action:'msgList',key:K()})]);
     const unread={};(mj.items||[]).forEach(m=>{if(!m.read&&m.from==='Client')unread[m.projectId]=(unread[m.projectId]||0)+1});
@@ -349,7 +421,7 @@ async function openProj(id){
     const portal=(location.origin.startsWith('http')&&!/claude|androidplatform/.test(location.host)?location.origin+location.pathname:'(your website)/work.html');
     $('dShare').href='https://wa.me/?text='+encodeURIComponent(`Dear ${cur.client||'Sir/Madam'},\n\nYou can follow the progress of "${cur.name}" online:\n${portal}\nProject code: ${cur.code}\n\n— M/s Lee Enterprise, Naharlagun`);
     $('uProg').value=cur.progress||0;$('uPv').textContent=$('uProg').value+'%';
-    timeline($('dTl'),j.updates,true);chat($('dChat'),j.messages,'Owner');
+    timeline($('dTl'),j.updates,true);chat($('dChat'),j.messages,'Owner');loadOwnerFiles(id);
     if(j.messages.some(m=>!m.read&&m.from==='Client')) api({action:'msgRead',key:K(),projectId:id}).catch(()=>{});
   }catch(e){toast(e.message)}
 }
@@ -369,7 +441,111 @@ $('dSend').onclick=async()=>{const t=$('dText').value.trim();if(!t&&!dFileData)r
 let delArm=0;$('dDel').onclick=async()=>{if(Date.now()-delArm>4000){delArm=Date.now();$('dDel').textContent='Tap again to delete permanently';setTimeout(()=>$('dDel').textContent='Delete project',4000);return}
   try{await api({action:'projDelete',key:K(),id:cur.id});toast('Deleted');showList()}catch(e){toast(e.message)}};
 
+
+
+/* ---------- documents, 3D & approvals ---------- */
+function linkify(s){return esc(s).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}
+const KIND={doc:'📄',model:'🧊',photo:'🖼️'};
+function viewerLink(f,owner){return 'viewer.html?'+(f.driveId?'fid='+encodeURIComponent(f.id):'src='+encodeURIComponent(f.url))+'&name='+encodeURIComponent(f.name)+(owner?'':'&code='+encodeURIComponent(cCode))}
+function fileRow(f,owner){
+  const st=f.approval?`<span class="st ${f.approval.split(' ')[0]}">${esc(f.approval)}</span>`:'';
+  const fin=f.final?'<span class="st fin">FINAL</span>':'';
+  const open=f.kind==='model'?`<a class="btn btn-sm btn-primary" href="${viewerLink(f,owner)}" target="_blank" rel="noopener">View 3D model</a><a class="btn btn-sm btn-line" href="${esc(f.url)}" target="_blank" rel="noopener">Download</a>`
+    :`<a class="btn btn-sm btn-primary" href="${esc(f.url)}" target="_blank" rel="noopener">Open</a>`;
+  const dec=!owner&&f.approval==='Pending'?`<button class="btn btn-sm btn-green" style="background:#2e9b4a;color:#fff" onclick="decideUI('${f.id}',${f.final},'Approved')">Approve</button><button class="btn btn-sm btn-line" onclick="decideUI('${f.id}',${f.final},'Changes requested')">Request changes</button>`:'';
+  const del=owner?`<button class="btn btn-sm btn-red" onclick="delFile('${f.id}')">Remove</button>`:'';
+  const info=f.decidedBy?`<div class="muted" style="font-size:12.5px;margin-top:4px">${esc(f.approval)} by ${esc(f.decidedBy)} on ${esc(f.decidedOn)}${f.comment?' — “'+esc(f.comment)+'”':''}</div>`:'';
+  return `<div class="doc"><div class="ic ${f.kind==='model'?'m':''}">${KIND[f.kind]||'📄'}</div><div class="mm"><b>${esc(f.name)}${fin}${st}</b><span class="muted" style="font-size:12.5px">Shared ${esc(f.added)}</span>${info}<div class="acts">${open}${dec}${del}</div><div id="dec_${f.id}"></div></div></div>`;
+}
+async function loadClientFiles(){
+  try{const j=await api({action:'files',clientCode:cCode});const it=(j.items||[]).slice().reverse();
+    $('cFiles').innerHTML=it.length?it.map(f=>fileRow(f,false)).join(''):'<p class="muted">Your drawings, reports, quotation and 3D survey model will appear here.</p>';}
+  catch(e){$('cFiles').innerHTML='<p class="muted">Documents will appear here.</p>'}
+}
+function decideUI(id,fin,decision){
+  const box=$('dec_'+id);
+  box.innerHTML=`<div class="decide"><label>Your name<input id="dn_${id}" value="${esc(S.get('cname',''))}"></label>
+    ${decision==='Approved'?'':`<label>What should we change?<textarea id="dc_${id}" rows="3"></textarea></label>`}
+    ${decision==='Approved'?`<label class="chk"><input type="checkbox" id="dk_${id}"> ${fin?'I approve the FINAL work as submitted, and I understand the balance phase payment is now due as per the quotation.':'I have checked this and approve it.'}</label><label>Comment (optional)<input id="dc_${id}"></label>`:''}
+    <button class="btn btn-primary btn-wide" onclick="decideGo('${id}','${decision}')">${decision==='Approved'?'Confirm approval':'Send change request'}</button></div>`;
+}
+async function decideGo(id,decision){
+  const name=($('dn_'+id).value||'').trim(),c=$('dc_'+id)?$('dc_'+id).value.trim():'';
+  if(!name){toast('Type your name');return}
+  if(decision==='Approved'&&!$('dk_'+id).checked){toast('Please tick the confirmation');return}
+  if(decision!=='Approved'&&!c){toast('Write what to change');return}
+  try{const j=await api({action:'decide',clientCode:cCode,id,decision,comment:c,name});S.set('cname',name);
+    toast(j.final&&decision==='Approved'?'Final work approved — thank you!':'Sent ✓');cLoad()}catch(e){toast(e.message)}
+}
+let fData='';
+$('fFile').onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>30*1048576){toast('File over 30 MB — upload to GitHub/Dropbox and paste the link');e.target.value='';return}
+  if(!$('fName').value)$('fName').value=f.name.replace(/\.[^.]+$/,'');if(/\.(las|ply|pcd|xyz|txt|csv|pts)$/i.test(f.name))$('fKind').value='model';else if(/^image\//.test(f.type))$('fKind').value='photo';
+  const fr=new FileReader();fr.onload=()=>{fData=fr.result;$('fFile').dataset.fname=f.name};fr.readAsDataURL(f)};
+$('fAdd').onclick=async()=>{
+  const name=$('fName').value.trim();if(!name){toast('Give it a name');return}
+  if(!fData&&!$('fUrl').value.trim()){toast('Choose a file or paste a link');return}
+  const b=$('fAdd');b.disabled=true;b.textContent='Uploading…';
+  try{await api({action:'fileAdd',key:K(),item:{projectId:cur.id,name,kind:$('fKind').value,data:fData||undefined,fileName:$('fFile').dataset.fname,url:$('fUrl').value.trim()||undefined,note:$('fNote').value.trim(),forApproval:$('fAppr').checked||$('fFinal').checked,final:$('fFinal').checked}});
+    toast('Shared with client ✓');fData='';['fName','fUrl','fNote'].forEach(x=>$(x).value='');$('fFile').value='';$('fAppr').checked=$('fFinal').checked=false;openProj(cur.id)}
+  catch(e){toast('Failed: '+e.message)}finally{b.disabled=false;b.textContent='Share with client'}
+};
+async function loadOwnerFiles(pid){try{const j=await api({action:'files',key:K(),projectId:pid});const it=(j.items||[]).slice().reverse();$('dFiles').innerHTML=it.map(f=>fileRow(f,true)).join('')||'<p class="muted">Nothing shared yet.</p>'}catch(e){$('dFiles').innerHTML=''}}
+async function delFile(id){try{await api({action:'fileDel',key:K(),id});openProj(cur.id)}catch(e){toast(e.message)}}
+
+/* ---------- client requirements (owner) ---------- */
+let reqs=[], curReq=null;
+const PH_DEFAULT=[[40,'Advance — on acceptance of quotation (work starts)'],[30,'On submission of survey / draft design'],[20,'On submission of final drawings / main work'],[10,'Balance — on final handover']];
+async function loadReqs(){
+  if(isDemo()){$('oReqs').innerHTML='<p class="muted">Requirements appear here when clients submit the form (live mode).</p>';return}
+  try{const j=await api({action:'briefList',key:K()});reqs=j.items||[];
+    $('oReqs').innerHTML=reqs.length?reqs.slice(0,40).map((r,i)=>`<div class="pi" onclick="openReq(${i})"><div class="cv" style="background:${r.status==='New'?'#fde8e8':'#eef4ff'};color:${r.status==='New'?'#b03030':'#1a4fb0'}">${r.status==='New'?'NEW':'✓'}</div>
+      <div class="m"><b>${esc(r.client)} — ${esc(r.services)}</b><span>${esc(r.ref)} · ${esc(r.location||'')} · ${esc(r.status)}${r.amount?' · ₹'+Number(r.amount).toLocaleString('en-IN'):''}</span></div></div>`).join(''):'<p class="muted">No requirements yet. Share the form: <b>brief.html</b></p>';
+  }catch(e){$('oReqs').innerHTML=`<p class="muted">Could not load: ${esc(e.message)}</p>`}
+}
+$('rReload').onclick=loadReqs;
+function phasesUI(list){
+  $('qPhases').innerHTML=list.map(([p,l],i)=>`<div style="display:grid;grid-template-columns:70px 1fr 110px;gap:8px;align-items:center;margin-bottom:8px">
+    <input class="qp" data-i="${i}" type="number" value="${p}" style="text-align:center"><input class="ql" value="${esc(l)}"><span class="qa muted" style="text-align:right"></span></div>`).join('');
+  document.querySelectorAll('.qp').forEach(x=>x.oninput=calcQ);calcQ();
+}
+function getPhases(){const ps=[...document.querySelectorAll('.qp')],ls=[...document.querySelectorAll('.ql')];return ps.map((p,i)=>({pct:+p.value||0,label:ls[i].value.trim()}))}
+function calcQ(){const amt=+($('qAmt').value||'').replace(/,/g,'')||0;const ph=getPhases();let tot=0;
+  document.querySelectorAll('.qa').forEach((s,i)=>{const a=Math.round(amt*ph[i].pct)/100;s.textContent=amt?'₹'+a.toLocaleString('en-IN'):'';});
+  tot=ph.reduce((s,p)=>s+p.pct,0);$('qSum').innerHTML=`Phases total: <b style="color:${tot===100?'#1d7a3a':'#d64545'}">${tot}%</b>${tot!==100?' (must be 100%)':''}`}
+$('qAmt').oninput=calcQ;
+function openReq(i){
+  curReq=reqs[i];const r=curReq,d=r.data||{},c=d.client||{},s=d.site||{};
+  ['oList','oEdit','oDetail'].forEach(x=>$(x).classList.add('hidden'));$('oReq').classList.remove('hidden');scrollTo(0,0);
+  $('rTitle').textContent=r.ref+' — '+r.client;
+  const sec=(d.sections||[]).map(x=>`<p style="margin-top:8px"><b>${esc(x.title)}</b><br>${Object.entries(x.answers||{}).map(([k,v])=>`<span class="muted">${esc(k)}:</span> ${esc(Array.isArray(v)?v.join(', '):v)}`).join('<br>')}</p>`).join('');
+  $('rInfo').innerHTML=`<p><b>${esc(c.name)}</b> · ${esc(c.phone)} ${c.email?'· '+esc(c.email):''}<br>${esc([c.type,c.org,c.designation].filter(Boolean).join(' · '))}</p>
+    <p style="margin-top:8px"><b>Services:</b> ${esc(r.services)}</p>
+    <p style="margin-top:8px"><b>Site:</b> ${esc([s.location,s.district].filter(Boolean).join(', '))} ${s.area?'· '+esc(s.area+' '+(s.areaUnit||'')):''} ${s.terrain?'· '+esc(s.terrain):''} ${s.gps?`· <a href="${esc(s.gps)}" target="_blank" rel="noopener">map</a>`:''}</p>
+    ${sec}<p style="margin-top:8px"><b>Budget:</b> ${esc((d.budget||{}).range||'-')} · <b>Start:</b> ${esc((d.budget||{}).start||'-')}</p>
+    <p style="margin-top:8px;color:#1d7a3a"><b>Payment consent:</b> ✓ signed by ${esc(r.signature)}</p>`;
+  $('rPdf').href=r.pdf||'#';const ph=String(r.phone).replace(/\D/g,'');const wn=ph.length===10?'91'+ph:ph;
+  $('rCall').href='https://wa.me/'+wn+'?text='+encodeURIComponent(`Dear ${r.client}, thank you for your requirement (${r.ref}). We would like to schedule a site visit. When is convenient for you? — M/s Lee Enterprise`);
+  $('rTel').href='tel:'+String(r.phone).replace(/[^\d+]/g,'');
+  $('rStatus').value=r.status||'New';$('rVer').value=r.verifiedOn||'';$('rNotes').value=r.notes||'';
+  $('qAmt').value=r.amount||'';$('qNotes').value='';phasesUI(PH_DEFAULT);$('qResult').classList.add('hidden');
+  $('rProj').textContent=r.projectId?'Project already created — open Projects':'Client accepted → create project & client code';
+}
+$('rBack').onclick=()=>{$('oReq').classList.add('hidden');showList()};
+$('rSave').onclick=async()=>{try{await api({action:'briefUpdate',key:K(),ref:curReq.ref,fields:{status:$('rStatus').value,verifiedOn:$('rVer').value,notes:$('rNotes').value}});toast('Saved ✓');curReq.status=$('rStatus').value}catch(e){toast(e.message)}};
+$('qSend').onclick=async()=>{
+  const amt=+($('qAmt').value||'').replace(/,/g,'');if(!(amt>0)){toast('Enter the amount');return}
+  const ph=getPhases();if(ph.reduce((s,p)=>s+p.pct,0)!==100){toast('Phases must add up to 100%');return}
+  const b=$('qSend');b.disabled=true;b.textContent='Making PDF & sending…';
+  try{const j=await api({action:'quoteSend',key:K(),ref:curReq.ref,amount:amt,phases:ph,notes:$('qNotes').value.trim(),validDays:+$('qValid').value||30});
+    $('qResult').classList.remove('hidden');$('qMsg').textContent=j.emailed?'Quotation PDF created and emailed to the client (copy to you).':'Quotation PDF created. Client has no email — send it on WhatsApp.';
+    $('qPdf').href=j.pdf;const wn=j.phone.length===10?'91'+j.phone:j.phone;$('qWa').href='https://wa.me/'+wn+'?text='+encodeURIComponent(j.waText);
+    $('rStatus').value='Quoted';curReq.status='Quoted';curReq.amount=amt;toast('Quotation sent ✓');
+  }catch(e){toast('Failed: '+e.message)}finally{b.disabled=false;b.textContent='Make PDF & email to client'}
+};
+$('rProj').onclick=async()=>{try{const j=await api({action:'briefToProject',key:K(),ref:curReq.ref});toast(j.existing?'Already a project':'Project created ✓');curReq.projectId=j.id;$('oReq').classList.add('hidden');openProj(j.id)}catch(e){toast(e.message)}};
+
 /* ---------- start ---------- */
+const qc=new URLSearchParams(location.search).get('code');if(qc){cCode=qc.toUpperCase();}
 if(location.hash==='#owner') tab('o'); else if(cCode){$('cCode').value=cCode;cLoad()}
 </script>
 </body>
