@@ -315,8 +315,9 @@ function portfolio_() {
   return projects_(false).filter(function (p) { return p.public; }).map(function (p) {
     const u = updates_(p.id, true);
     const photos = [].concat.apply([], u.map(function (x) { return x.photos; })).slice(0, 8);
-    return { id: p.id, name: p.name, location: p.location, company: p.company, category: p.category, status: p.status,
-      progress: p.progress, desc: p.desc, cover: p.cover || photos[0] || '', photos: photos, updated: p.updated };
+    const vids = [].concat.apply([], u.map(function (x) { return (String(x.text || '').match(/VIDEO:\s*(\S+)/g) || []).map(function (s) { return s.replace(/VIDEO:\s*/, ''); }); }));
+    return { id: p.id, name: p.name, client: p.client || '', location: p.location, company: p.company, category: p.category, status: p.status,
+      progress: p.progress, desc: p.desc, cover: p.cover || photos[0] || '', photos: photos, video: vids[0] || '', updated: p.updated };
   });
 }
 

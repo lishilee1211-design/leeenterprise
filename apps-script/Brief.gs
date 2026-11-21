@@ -402,7 +402,7 @@ function filesRoute_(q, owner) {
     case 'fileGet':  return fileGet_(q.id, owner, q.clientCode);
     case 'decide':   return decide_(q.clientCode, q.id, q.decision, q.comment, q.name);
   }
-  return null;
+  return showcaseRoute_(q, owner);
 }
 
 function fileAdd_(it) {
@@ -469,4 +469,76 @@ function fileDel_(id) {
   if (!r) return { ok: false, error: 'Not found' };
   filesSheet_().deleteRow(r._row);
   return { ok: true };
+}
+
+
+/* ───────── Showcase: owner adds finished work (photos + video) to the public website, with AI help ───────── */
+const SHOW_CATS = { survey: 'Survey', infra: 'Infrastructure', building: 'Building', sports: 'Sports' };
+const MAX_VIDEO_MB = 25;
+
+function showcaseRoute_(q, owner) {
+  switch (q.action) {
+    case 'showAI':   if (!owner) throw new Error('Owner key required'); return showAI_(q.photo, q.notes);
+    case 'showPost': if (!owner) throw new Error('Owner key required'); return showPost_(q.item);
+    case 'showList': if (!owner) throw new Error('Owner key required');
+      return { ok: true, items: portfolio_().slice().reverse() };
+    case 'showHide': if (!owner) throw new Error('Owner key required'); {
+      const r = rowById_('Projects', q.id); if (!r) return { ok: false, error: 'Not found' };
+      sheet_('Projects').getRange(r._row, 10).setValue('NO'); return { ok: true };
+    }
+  }
+  return null;
+}
+
+function guessShow_(notes) {
+  const n = String(notes || '').trim(), l = n.toLowerCase();
+  const cat = /lidar|survey|drone|dgps|contour|mapping|ortho/.test(l) ? 'survey' : /stadium|ground|sports|court/.test(l) ? 'sports'
+    : /road|bridge|drain|wall|water|culvert|rotary|junction|alignment/.test(l) ? 'infra' : 'building';
+  const m = n.match(/\b(?:at|in|near)\s+([A-Z][\w\s,.-]{2,40})/);
+  const first = n.split(/[.\n]/)[0].slice(0, 80);
+  return { title: first ? first.charAt(0).toUpperCase() + first.slice(1) : 'Completed work', category: cat,
+    location: m ? m[1].trim().replace(/[.,]$/, '') : '', client: '', desc: n };
+}
+
+function showAI_(photo, notes) {
+  const key = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
+  const fallback = guessShow_(notes);
+  if (!key) return { ok: true, ai: false, suggestion: fallback, note: 'Smart fill used (add ANTHROPIC_API_KEY for full AI).' };
+  const content = [];
+  const m = String(photo || '').match(/^data:(image\/(?:jpeg|png|webp));base64,(.*)$/);
+  if (m) content.push({ type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } });
+  content.push({ type: 'text', text: 'Owner notes: ' + (notes || '(none)') + '\n\nWrite a website portfolio entry for this completed work by M/s Lee Enterprise (survey, design & construction firm in Arunachal Pradesh). ' +
+    'Return ONLY JSON: {"title": short professional name of the work (max 9 words), "category": one of survey|infra|building|sports, "location": place from the notes or "" , ' +
+    '"client": client or funding agency from the notes or "", "desc": one or two plain sentences describing the work}. Do not invent places or clients that are not in the notes.' });
+  try {
+    const res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', { method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      payload: JSON.stringify({ model: AI_MODEL, max_tokens: 400, messages: [{ role: 'user', content: content }] }) });
+    const body = JSON.parse(res.getContentText() || '{}');
+    if (res.getResponseCode() !== 200) return { ok: true, ai: false, suggestion: fallback, note: 'AI busy — smart fill used.' };
+    const txt = (body.content || []).map(function (c) { return c.text || ''; }).join('');
+    const j = JSON.parse(txt.slice(txt.indexOf('{'), txt.lastIndexOf('}') + 1));
+    if (!SHOW_CATS[j.category]) j.category = fallback.category;
+    return { ok: true, ai: true, suggestion: j };
+  } catch (e) { return { ok: true, ai: false, suggestion: fallback, note: 'Smart fill used.' }; }
+}
+
+function showPost_(it) {
+  if (!it || !it.title) return { ok: false, error: 'Name of work is required' };
+  if (!(it.photos || []).length && !it.videoData && !it.videoUrl) return { ok: false, error: 'Add at least one photo or a video' };
+  let video = String(it.videoUrl || '').trim();
+  if (it.videoData) {
+    const m = String(it.videoData).match(/^data:([^;]*);base64,(.*)$/);
+    if (!m) return { ok: false, error: 'Bad video file' };
+    const bytes = Utilities.base64Decode(m[2]);
+    if (bytes.length > MAX_VIDEO_MB * 1048576) return { ok: false, error: 'Video is over ' + MAX_VIDEO_MB + ' MB — upload it to YouTube/Drive and paste the link' };
+    const f = folder_().createFile(Utilities.newBlob(bytes, m[1] || 'video/mp4', (it.videoName || 'work-video.mp4')));
+    f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    video = 'https://drive.google.com/file/d/' + f.getId() + '/preview';
+  }
+  const pj = saveProject_({ name: it.title, client: it.client || '', location: it.location || '', company: it.company || COMPANIES[0],
+    category: SHOW_CATS[it.category] || 'Building', status: 'Completed', progress: 100, public: true, desc: it.desc || '' });
+  if (!pj.ok) return pj;
+  const up = addUpdate_({ projectId: pj.id, title: 'Work completed', text: (it.desc || '') + (video ? '\nVIDEO: ' + video : ''), photos: (it.photos || []).slice(0, 10), progress: 100 });
+  return { ok: true, id: pj.id, video: video, photos: up.ok };
 }

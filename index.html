@@ -553,7 +553,7 @@ footer .brand b{color:#fff}
 <div class="lb" id="lb" role="dialog" aria-modal="true">
   <div class="bar"><div><b id="lbT"></b><small id="lbS"></small></div><button class="x" id="lbX" aria-label="Close">×</button></div>
   <div class="stage"><button class="nav prev" id="lbP" aria-label="Previous">‹</button><img id="lbI" alt=""><button class="nav next" id="lbN" aria-label="Next">›</button></div>
-  <p class="desc" id="lbD"></p>
+  <p class="desc" id="lbD"></p><div id="lbV" style="text-align:center;padding:0 18px 10px"></div>
   <div class="thumbs" id="lbTh"></div>
 </div>
 
@@ -651,20 +651,20 @@ const ART={
 let live=[]; // public projects loaded from your Google Sheet
 
 const grid=document.getElementById('pgrid'); let tab='all', filt='all', limit=9;
-function list(){return P.concat(live).filter(p=>(tab==='all'||p.f===tab)&&(filt==='all'||p.cat===filt))}
+function list(){return live.concat(P).filter(p=>(tab==='all'||p.f===tab)&&(filt==='all'||p.cat===filt))}
 function card(p,i){
   const cover=p.cover?`<img src="${p.cover}" alt="${p.title}" loading="lazy">`:p.imgs?`<img src="${T(p.imgs[0])}" alt="${p.title}" loading="lazy">`:ART[p.art||'survey'];
   const n=(p.imgs?p.imgs.length:0)+(p.photos?p.photos.length:0);
   const done=/complete/i.test(p.status);
   return `<article class="pc" data-i="${i}" style="animation-delay:${(i%9)*40}ms">${cover}
-   <div class="top">${!p.simple?`<span class="chip ${done?'done':''}"><i></i>${p.status||'In progress'}</span>`:''}${n>1?`<span class="chip cnt">${n} photos</span>`:''}</div>
+   <div class="top">${!p.simple?`<span class="chip ${done?'done':''}"><i></i>${p.status||'In progress'}</span>`:''}${p.video?'<span class="chip cnt">▶ Video</span>':n>1?`<span class="chip cnt">${n} photos</span>`:''}</div>
    <div class="info">${p.tag&&!p.simple?`<div class="cat">${p.tag}</div>`:''}<h3>${p.title}</h3><div class="loc"><svg><use href="#i-pin"/></svg>${p.place}${p.client&&!p.simple?' · '+p.client:''}</div>${p.by?`<div class="by">${p.by}</div>`:''}
    ${p.progress!=null&&!done&&!p.simple?`<div class="bar"><b style="width:${p.progress}%"></b></div>`:''}</div></article>`;
 }
 function render(){
   const L=list(); grid.innerHTML=L.slice(0,limit).map((p,i)=>card(p,i)).join('');
   document.getElementById('moreBtn').style.display=L.length>limit?'inline-flex':'none';
-  const all=P.concat(live);
+  const all=live.concat(P);
   document.getElementById('cAll').textContent=all.length;document.getElementById('cLee').textContent=all.filter(p=>p.f==='lee').length;document.getElementById('cTn').textContent=all.filter(p=>p.f==='tn').length;
   document.getElementById('tnNote').classList.toggle('show',tab==='tn');
 }
@@ -677,6 +677,7 @@ grid.onclick=e=>{const c=e.target.closest('.pc');if(!c)return;const p=list()[+c.
 const lb=document.getElementById('lb');let lbImgs=[],lbIx=0;
 function openLB(p,start){
   lbImgs=(p.imgs||[]).map(I).concat(p.photos||[]); if(!lbImgs.length&&p.cover) lbImgs=[p.cover];
+  document.getElementById('lbV').innerHTML=p.video?`<div style="max-width:900px;margin:0 auto;aspect-ratio:16/9"><iframe src="${p.video.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/')}" style="width:100%;height:100%;border:0;border-radius:12px" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe></div>`:'';
   document.getElementById('lbT').textContent=p.title; document.getElementById('lbS').textContent=p.simple?[p.place,p.by].filter(Boolean).join(' · '):[p.tag,p.place,p.client,p.f==='tn'?'T.N Consultant':'M/s Lee Enterprise'].filter(Boolean).join(' · ');
   document.getElementById('lbD').textContent=p.simple?'':(p.desc||'');
   const st=lb.querySelector('.stage'); st.style.display=lbImgs.length?'flex':'none';
@@ -700,7 +701,7 @@ document.getElementById('strip').onclick=e=>{const f=e.target.closest('figure');
   const url=(()=>{try{return localStorage.getItem('lee_url')&&JSON.parse(localStorage.getItem('lee_url'))}catch(e){return ''}})()||window.LEE_SERVER;
   if(!url) return;
   try{const r=await fetch(url+'?action=portfolio');const j=await r.json();
-    live=(j.items||[]).map(x=>({f:/T\.N/.test(x.company)?'tn':'lee',cat:({Survey:'survey',Infrastructure:'infra','Water Supply':'infra',Building:'building',Sports:'sports'})[x.category]||'infra',tag:(x.category||'Project')+' · Live',title:x.name,place:x.location||'',status:x.status||'In progress',progress:x.progress,desc:x.desc,cover:x.cover,photos:x.photos}));
+    live=(j.items||[]).map(x=>({simple:1,by:x.client||'',video:x.video||'',f:/T\.N/.test(x.company)?'tn':'lee',cat:({Survey:'survey',Infrastructure:'infra','Water Supply':'infra',Building:'building',Sports:'sports'})[x.category]||'infra',tag:(x.category||'Project')+' · Live',title:x.name,place:x.location||'',status:x.status||'In progress',progress:x.progress,desc:x.desc,cover:x.cover,photos:x.photos}));
     render();
   }catch(e){}
 })();
