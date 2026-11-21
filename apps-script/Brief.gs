@@ -494,10 +494,11 @@ function guessShow_(notes) {
   const n = String(notes || '').trim(), l = n.toLowerCase();
   const cat = /lidar|survey|drone|dgps|contour|mapping|ortho/.test(l) ? 'survey' : /stadium|ground|sports|court/.test(l) ? 'sports'
     : /road|bridge|drain|wall|water|culvert|rotary|junction|alignment/.test(l) ? 'infra' : 'building';
-  const m = n.match(/\b(?:at|in|near)\s+([A-Z][\w\s,.-]{2,40})/);
+  const m = n.match(/\b(?:at|in|near)\s+([A-Z][\w\s,.-]{2,40}?)(?=\s+(?:for|by|under|of)\b|[.\n]|$)/);
+  const cm = n.match(/\b(?:for|client)\s*:?\s+([A-Z][\w&.\s-]{1,40}?)(?=[.,\n]|$)/);
   const first = n.split(/[.\n]/)[0].slice(0, 80);
   return { title: first ? first.charAt(0).toUpperCase() + first.slice(1) : 'Completed work', category: cat,
-    location: m ? m[1].trim().replace(/[.,]$/, '') : '', client: '', desc: n };
+    location: m ? m[1].trim().replace(/[.,]$/, '') : '', client: cm ? cm[1].trim() : '', desc: n };
 }
 
 function showAI_(photo, notes) {
