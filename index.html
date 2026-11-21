@@ -547,44 +547,44 @@ footer .brand b{color:#fff}
 const I=n=>'img/'+n+'.jpg', T=n=>'img/'+n+'_t.jpg';
 const P=[
  // ---- Lee Enterprise (current) ----
- {f:'lee',cat:'sports',tag:'Sports · Landscape',title:'Multi-Purpose Sports Complex',place:'Burm, Papum Pare',client:'Water Resources Dept.',status:'In progress',desc:'Riverside sports complex on a drone orthophoto: 10-a-side football, volleyball, basketball, lawn tennis, badminton, swimming pool, jogging trail, restaurant and parking — with a 3D walkthrough.',imgs:['lee_burm_ortho','lee_burm_layout']},
- {f:'lee',cat:'infra',tag:'Water Supply · Hydraulics',title:'Poma Stream Source Development & Gravity Supply Scheme',place:'Poma',client:'Urban Development & Housing Dept.',status:'In progress',desc:'Feasibility, headworks, desilting and intake chambers, 110 mm HDPE gravity main, delivery tank, monsoon flood check and flow simulation — drawn on DGPS contours.',imgs:['lee_poma_layout','lee_poma_contour']},
- {f:'lee',cat:'building',tag:'Government Building',title:'PWD Sub-Division Office, Nyapin',place:'Nyapin Circle',client:'PWD',status:'In progress',desc:'Architectural and structural design (ground floor, designed for G+1), furniture layout, 3D views, staircase, water tank and septic tank.',imgs:['lee_nyapin','lee_nyapin_interior','lee_nyapin_iso2']},
- {f:'lee',cat:'infra',tag:'Geotechnical · RCC',title:'Terraced Retaining Wall System (8 m)',place:'Papum Pare',client:'Private site',status:'In progress',desc:'RCC cantilever wall with shear key, 6 m berm road and upper RRM wall across about 60 m of slope, with BBS.',imgs:['lee_rw_section']},
- {f:'lee',cat:'sports',tag:'Sports · Site Development',title:'Football Stadium, Itanagar Capital Region',place:'Hollongi, Papum Pare',client:'PWD, Naharlagun Division',status:'In progress',desc:'Site development design from LiDAR point cloud — longitudinal and cross sections and fill quantities.',art:'field'},
- {f:'lee',cat:'sports',tag:'Sports · Design & 3D',title:'Outdoor Stadium (Day & Night) with Covered Gallery',place:'Sangram',client:'PWD, Sangram Division',status:'In progress',desc:'Layout, drawings and 3D views of a floodlit outdoor stadium with covered gallery and vehicle parking.',art:'stadium'},
- {f:'lee',cat:'building',tag:'Residential · Duplex',title:'Duplex Residence with Terrace Pool',place:'Karsingsa',client:'Private client',status:'In progress',desc:'Five-bedroom duplex with double-height void, lift, home theatre and terrace pool — layout and Revit model.',art:'house'},
- {f:'lee',cat:'building',tag:'Residential · RCC Frame',title:'Residence G+1 (G+5 provision)',place:'Ganga, Itanagar',client:'Private client',status:'In progress',desc:'RCC-framed home designed for future floors, with 3D options, plumbing and structural drawings.',art:'tower'},
- {f:'lee',cat:'survey',tag:'Drone Survey · GCP',title:'Drone Survey & Mapping',place:'Itanagar',client:'Survey & mapping',status:'In progress',desc:'GCP-controlled drone survey processed into orthomosaic and elevation model.',art:'survey'},
+ {f:'lee',simple:1,cat:'sports',tag:'Sports · Landscape',title:'Multi-Purpose Sports Complex',place:'Burm, Papum Pare',client:'Water Resources Dept.',status:'In progress',desc:'Riverside sports complex on a drone orthophoto: 10-a-side football, volleyball, basketball, lawn tennis, badminton, swimming pool, jogging trail, restaurant and parking — with a 3D walkthrough.',imgs:['lee_burm_ortho','lee_burm_layout']},
+ {f:'lee',simple:1,cat:'infra',tag:'Water Supply · Hydraulics',title:'Poma Stream Source Development & Gravity Supply Scheme',place:'Poma',client:'Urban Development & Housing Dept.',status:'In progress',desc:'Feasibility, headworks, desilting and intake chambers, 110 mm HDPE gravity main, delivery tank, monsoon flood check and flow simulation — drawn on DGPS contours.',imgs:['lee_poma_layout','lee_poma_contour']},
+ {f:'lee',simple:1,cat:'building',tag:'Government Building',title:'PWD Sub-Division Office, Nyapin',place:'Nyapin Circle',client:'PWD',status:'In progress',desc:'Architectural and structural design (ground floor, designed for G+1), furniture layout, 3D views, staircase, water tank and septic tank.',imgs:['lee_nyapin','lee_nyapin_interior','lee_nyapin_iso2']},
+ {f:'lee',simple:1,cat:'infra',tag:'Geotechnical · RCC',title:'Terraced Retaining Wall System (8 m)',place:'Papum Pare',client:'Private site',status:'In progress',desc:'RCC cantilever wall with shear key, 6 m berm road and upper RRM wall across about 60 m of slope, with BBS.',imgs:['lee_rw_section']},
+ {f:'lee',simple:1,cat:'sports',tag:'Sports · Site Development',title:'Football Stadium, Itanagar Capital Region',place:'Hollongi, Papum Pare',client:'PWD, Naharlagun Division',status:'In progress',desc:'Site development design from LiDAR point cloud — longitudinal and cross sections and fill quantities.',art:'field'},
+ {f:'lee',simple:1,cat:'sports',tag:'Sports · Design & 3D',title:'Outdoor Stadium (Day & Night) with Covered Gallery',place:'Sangram',client:'PWD, Sangram Division',status:'In progress',desc:'Layout, drawings and 3D views of a floodlit outdoor stadium with covered gallery and vehicle parking.',art:'stadium'},
+ {f:'lee',simple:1,cat:'building',tag:'Residential · Duplex',title:'Duplex Residence with Terrace Pool',place:'Karsingsa',client:'Private client',status:'In progress',desc:'Five-bedroom duplex with double-height void, lift, home theatre and terrace pool — layout and Revit model.',art:'house'},
+ {f:'lee',simple:1,cat:'building',tag:'Residential · RCC Frame',title:'Residence G+1 (G+5 provision)',place:'Ganga, Itanagar',client:'Private client',status:'In progress',desc:'RCC-framed home designed for future floors, with 3D options, plumbing and structural drawings.',art:'tower'},
+ {f:'lee',simple:1,cat:'survey',tag:'Drone Survey · GCP',title:'Drone Survey & Mapping',place:'Itanagar',client:'Survey & mapping',status:'In progress',desc:'GCP-controlled drone survey processed into orthomosaic and elevation model.',art:'survey'},
  // ---- T.N Consultant (supervised) ----
- {f:'tn',cat:'survey',tag:'LiDAR · DPR · 200 km',title:'LiDAR Survey for NH-30 Four-Laning (Keshloor–Konta)',place:'Chhattisgarh · Package-7',status:'Completed',desc:'Consultancy LiDAR survey for the Detailed Project Report of NH-30 upgradation to four lanes from Keshloor to Konta — about 200 km of highway corridor.',imgs:['tn_nh3','tn_nh1']},
- {f:'tn',cat:'survey',tag:'LiDAR · Hydrology',title:'LiDAR & Hydrological Survey for Dam Construction',place:'Rhinkuri, Mao, Manipur',status:'Data processing',desc:'LiDAR survey supporting dam construction and hydrological studies, with Manipur Geomatic Pvt. Ltd., WRD officials, hydraulic experts and the local community.',imgs:['n_manipur','tn_dam1','tn_dam3','tn_dam2']},
- {f:'tn',cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway Corridor, Yingkiong',place:'Upper Siang, Arunachal Pradesh',status:'Completed',desc:'Drone LiDAR survey of a mountain highway corridor through dense forest and river valleys.',imgs:['tn_ying2','tn_ying1','tn_ying3','tn_ying4']},
- {f:'tn',cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway, Parshuram Kund',place:'Tezu, Lohit, Arunachal Pradesh',status:'Completed',desc:'Highway corridor LiDAR survey with processed orthomosaic of the valley.',imgs:['tn_parsh1','tn_parsh2','tn_parsh3']},
- {f:'tn',cat:'survey',tag:'LiDAR · Highway',title:'Survey for Highway at Nafra',place:'West Kameng, Arunachal Pradesh',status:'Completed',desc:'LiDAR and GNSS survey of a highway corridor through steep, vegetated terrain.',imgs:['tn_nafra2','tn_nafra4','tn_nafra3','tn_nafra1']},
- {f:'tn',cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway at Jowai',place:'West Jaintia Hills',status:'Completed',desc:'Highway corridor LiDAR survey with GNSS-tagged ground control.',imgs:['tn_jowai1']},
- {f:'tn',cat:'infra',tag:'Master Plan · DGPS',title:'Tato-II Hydroelectric Project — Colony Planning',place:'Tato, Shi-Yomi, Arunachal Pradesh',status:'Completed',desc:'DGPS survey of about 16 hectares at 1,240 m above MSL; contour and topography maps, colony master plan, landscaping, drainage and infrastructure design.',imgs:['tn_pf1','tn_tato3','tn_tato1','tn_tato4']},
- {f:'tn',cat:'building',tag:'Hospitality · Commercial',title:'Rooftop Café',place:'Model Village, Naharlagun',status:'Completed',desc:'Rooftop café with main seating, stage area, reception, kitchen, staff room, store and toilets — plan and 3D renders.',imgs:['tn_cafe2','tn_cafe1','tn_cafe3']},
- {f:'tn',cat:'building',tag:'Survey · Concept Plan',title:'VIP Guest House & Inspection Bungalow',place:'Potin, Keyi Panyor, Arunachal Pradesh',status:'Completed',desc:'Detailed survey and concept plan: VIP guest house, staff barrack, inspection bungalow, garden, parking and gates.',imgs:['tn_vip2','tn_vip1','tn_vip3']},
- {f:'tn',cat:'building',tag:'Residential · Design',title:'Roof & Sanitation Design',place:'Model Village, Naharlagun',status:'Completed',desc:'Climate-friendly roof designs and hygienic bathroom layouts for a model village.',imgs:['tn_roof1','tn_roof2']},
- {f:'tn',cat:'building',tag:'Commercial Building',title:'Commercial Building, Model Village',place:'Model Village, Naharlagun',status:'Completed',desc:'Multi-storey commercial building design with parking at ground level.',imgs:['tn_pf2']},
- {f:'tn',cat:'building',tag:'Commercial Building',title:'Commercial Building Site, Itanagar',place:'Itanagar',status:'Completed',desc:'Contemporary commercial building design with glazed staircase core.',imgs:['tn_pf3']},
+ {f:'tn',simple:1,cat:'survey',tag:'LiDAR · DPR · 200 km',title:'LiDAR Survey for NH-30 Four-Laning (Keshloor–Konta)',place:'Chhattisgarh · Package-7',status:'Completed',desc:'Consultancy LiDAR survey for the Detailed Project Report of NH-30 upgradation to four lanes from Keshloor to Konta — about 200 km of highway corridor.',imgs:['tn_nh3','tn_nh1']},
+ {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Hydrology',title:'LiDAR & Hydrological Survey for Dam Construction',place:'Rhinkuri, Mao, Manipur',status:'Data processing',desc:'LiDAR survey supporting dam construction and hydrological studies, with Manipur Geomatic Pvt. Ltd., WRD officials, hydraulic experts and the local community.',imgs:['n_manipur','tn_dam1','tn_dam3','tn_dam2']},
+ {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway Corridor, Yingkiong',place:'Upper Siang, Arunachal Pradesh',status:'Completed',desc:'Drone LiDAR survey of a mountain highway corridor through dense forest and river valleys.',imgs:['tn_ying2','tn_ying1','tn_ying3','tn_ying4']},
+ {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway, Parshuram Kund',place:'Tezu, Lohit, Arunachal Pradesh',status:'Completed',desc:'Highway corridor LiDAR survey with processed orthomosaic of the valley.',imgs:['tn_parsh1','tn_parsh2','tn_parsh3']},
+ {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'Survey for Highway at Nafra',place:'West Kameng, Arunachal Pradesh',status:'Completed',desc:'LiDAR and GNSS survey of a highway corridor through steep, vegetated terrain.',imgs:['tn_nafra2','tn_nafra4','tn_nafra3','tn_nafra1']},
+ {f:'tn',simple:1,cat:'survey',tag:'LiDAR · Highway',title:'LiDAR Survey of Highway at Jowai',place:'West Jaintia Hills',status:'Completed',desc:'Highway corridor LiDAR survey with GNSS-tagged ground control.',imgs:['tn_jowai1']},
+ {f:'tn',simple:1,cat:'infra',tag:'Master Plan · DGPS',title:'Tato-II Hydroelectric Project — Colony Planning',place:'Tato, Shi-Yomi, Arunachal Pradesh',status:'Completed',desc:'DGPS survey of about 16 hectares at 1,240 m above MSL; contour and topography maps, colony master plan, landscaping, drainage and infrastructure design.',imgs:['tn_pf1','tn_tato3','tn_tato1','tn_tato4']},
+ {f:'tn',simple:1,cat:'building',tag:'Hospitality · Commercial',title:'Rooftop Café',place:'Model Village, Naharlagun',status:'Completed',desc:'Rooftop café with main seating, stage area, reception, kitchen, staff room, store and toilets — plan and 3D renders.',imgs:['tn_cafe2','tn_cafe1','tn_cafe3']},
+ {f:'tn',simple:1,cat:'building',tag:'Survey · Concept Plan',title:'VIP Guest House & Inspection Bungalow',place:'Potin, Keyi Panyor, Arunachal Pradesh',status:'Completed',desc:'Detailed survey and concept plan: VIP guest house, staff barrack, inspection bungalow, garden, parking and gates.',imgs:['tn_vip2','tn_vip1','tn_vip3']},
+ {f:'tn',simple:1,cat:'building',tag:'Residential · Design',title:'Roof & Sanitation Design',place:'Model Village, Naharlagun',status:'Completed',desc:'Climate-friendly roof designs and hygienic bathroom layouts for a model village.',imgs:['tn_roof1','tn_roof2']},
+ {f:'tn',simple:1,cat:'building',tag:'Commercial Building',title:'Commercial Building, Model Village',place:'Model Village, Naharlagun',status:'Completed',desc:'Multi-storey commercial building design with parking at ground level.',imgs:['tn_pf2']},
+ {f:'tn',simple:1,cat:'building',tag:'Commercial Building',title:'Commercial Building Site, Itanagar',place:'Itanagar',status:'Completed',desc:'Contemporary commercial building design with glazed staircase core.',imgs:['tn_pf3']},
  // ---- added from office drives (D:, E:, SSD F:, Google Drive) ----
- {f:'lee',cat:'infra',simple:1,title:'Airport Aerocity — Land-Use Master Plan & Urban Road Design',place:'Hollongi, Itanagar Capital Region',imgs:['n_aero_tcs','n_aero_xs','n_aero_map']},
- {f:'lee',cat:'infra',simple:1,title:'Rotary & Junction Improvement, Itanagar',place:'Airport Tiniali, Chimpu, Gohpur Tiniali, IMC Junction, Yupia',imgs:['n_rot_air','n_rot_chimpu']},
- {f:'lee',cat:'infra',simple:1,title:'NEEPCO Hoj — Approach & Exit Road with 17.5 m RCC Wall',place:'Hoj, Papum Pare',imgs:['n_hoj']},
- {f:'tn',cat:'infra',simple:1,title:'Palin Town Storm-Water Drainage & Watershed Plan',place:'Palin, Kra Daadi',imgs:['n_palin_ws','n_palin_cs']},
- {f:'lee',cat:'survey',simple:1,title:'Drone Surveys for Urban Development Projects',place:'Itanagar, Nirjuli & Lekhi',imgs:['n_ud_dk','n_ud_bpl','n_ud_gh']},
- {f:'lee',cat:'survey',simple:1,title:'LiDAR Survey at Jang, Tawang',place:'Jang, Tawang, Arunachal Pradesh',imgs:['n_tawang']},
- {f:'lee',cat:'survey',simple:1,title:'Site Survey, Bath Village',place:'Bath Village, Papum Pare',imgs:['n_bath','n_bath_air']},
- {f:'lee',cat:'survey',simple:1,title:'Contour Mapping, Vivek Vihar & D-Sector',place:'Itanagar',imgs:['n_vivek_map','n_vivek_loc','n_dsector']},
- {f:'lee',cat:'survey',simple:1,title:'LiDAR 3D Site Model, Borang',place:'Arunachal Pradesh',imgs:['n_ronnie','n_ronnie2']},
- {f:'tn',cat:'building',simple:1,title:'Academic Block & 50-Bedded Boys’ Hostel, Govt. Sec. School',place:'Basarnallo, Papum Pare',imgs:['n_school_plan','n_school_cov']},
- {f:'lee',cat:'building',simple:1,title:'G+5 RCC Building & Landscape, Dariya Hill',place:'Dariya Hill, Itanagar',imgs:['n_dariya_land','n_dariya_site','n_dariya_map']},
- {f:'tn',cat:'building',simple:1,title:'Residential Swimming Pool, Chiputa',place:'Chiputa, Itanagar',imgs:['n_pool_render','n_pool_dwg']},
- {f:'lee',cat:'building',simple:1,title:'DIET Centre of Excellence — Campus Design',place:'Arunachal Pradesh',imgs:['n_diet']},
- {f:'lee',cat:'building',simple:1,title:'Multipurpose Hall — Drawings & Compliance',place:'Arunachal Pradesh',imgs:['n_hall']},
- {f:'tn',cat:'infra',simple:1,title:'RCC Retaining Walls, Abotani Colony & 6-Kilo',place:'Itanagar',imgs:['n_rwall']}
+ {f:'lee',simple:1,cat:'infra',simple:1,title:'Airport Aerocity — Land-Use Master Plan & Urban Road Design',place:'Hollongi, Itanagar Capital Region',imgs:['n_aero_tcs','n_aero_xs','n_aero_map']},
+ {f:'lee',simple:1,cat:'infra',simple:1,title:'Rotary & Junction Improvement, Itanagar',place:'Airport Tiniali, Chimpu, Gohpur Tiniali, IMC Junction, Yupia',imgs:['n_rot_air','n_rot_chimpu']},
+ {f:'lee',simple:1,cat:'infra',simple:1,title:'NEEPCO Hoj — Approach & Exit Road with 17.5 m RCC Wall',place:'Hoj, Papum Pare',imgs:['n_hoj']},
+ {f:'tn',simple:1,cat:'infra',simple:1,title:'Palin Town Storm-Water Drainage & Watershed Plan',place:'Palin, Kra Daadi',imgs:['n_palin_ws','n_palin_cs']},
+ {f:'lee',simple:1,cat:'survey',title:'Drone Surveys for Urban Development Projects',place:'Itanagar, Nirjuli & Lekhi',imgs:['n_ud_dk','n_ud_bpl','n_ud_gh']},
+ {f:'lee',simple:1,cat:'survey',title:'LiDAR Survey at Jang, Tawang',place:'Jang, Tawang, Arunachal Pradesh',imgs:['n_tawang']},
+ {f:'lee',simple:1,cat:'survey',title:'Site Survey, Bath Village',place:'Bath Village, Papum Pare',imgs:['n_bath','n_bath_air']},
+ {f:'lee',simple:1,cat:'survey',title:'Contour Mapping, Vivek Vihar & D-Sector',place:'Itanagar',imgs:['n_vivek_map','n_vivek_loc','n_dsector']},
+ {f:'lee',simple:1,cat:'survey',title:'LiDAR 3D Site Model, Borang',place:'Arunachal Pradesh',imgs:['n_ronnie','n_ronnie2']},
+ {f:'tn',simple:1,cat:'building',simple:1,title:'Academic Block & 50-Bedded Boys’ Hostel, Govt. Sec. School',place:'Basarnallo, Papum Pare',imgs:['n_school_plan','n_school_cov']},
+ {f:'lee',simple:1,cat:'building',simple:1,title:'G+5 RCC Building & Landscape, Dariya Hill',place:'Dariya Hill, Itanagar',imgs:['n_dariya_land','n_dariya_site','n_dariya_map']},
+ {f:'tn',simple:1,cat:'building',simple:1,title:'Residential Swimming Pool, Chiputa',place:'Chiputa, Itanagar',imgs:['n_pool_render','n_pool_dwg']},
+ {f:'lee',simple:1,cat:'building',simple:1,title:'DIET Centre of Excellence — Campus Design',place:'Arunachal Pradesh',imgs:['n_diet']},
+ {f:'lee',simple:1,cat:'building',simple:1,title:'Multipurpose Hall — Drawings & Compliance',place:'Arunachal Pradesh',imgs:['n_hall']},
+ {f:'tn',simple:1,cat:'infra',simple:1,title:'RCC Retaining Walls, Abotani Colony & 6-Kilo',place:'Itanagar',imgs:['n_rwall']}
 ];
 const FIELD=[['tn_nafra1','Survey team, Nafra'],['tn_dam1','Briefing with WRD, Manipur'],['tn_ying4','LiDAR flight, Upper Siang',1],['tn_nh3','NH-30 base station, Chhattisgarh'],['tn_jowai1','Ground control, Jowai'],['tn_dam3','Recce, Mao',1],['tn_nafra3','Corridor walk, West Kameng',1],['tn_tato4','DGPS base, Tato',1],['tn_dam2','Field camp, Rhinkuri'],['tn_parsh2','Valley mapping, Tezu'],['tn_about1','Stadium concept'],['tn_about2','Residence render']];
 const ART={
@@ -603,9 +603,9 @@ function card(p,i){
   const n=(p.imgs?p.imgs.length:0)+(p.photos?p.photos.length:0);
   const done=/complete/i.test(p.status);
   return `<article class="pc" data-i="${i}" style="animation-delay:${(i%9)*40}ms">${cover}
-   <div class="top">${p.status||!p.simple?`<span class="chip ${done?'done':''}"><i></i>${p.status||'In progress'}</span>`:''}${p.f==='tn'?'<span class="chip tn">T.N Consultant</span>':n>1?`<span class="chip cnt">${n} photos</span>`:''}</div>
-   <div class="info">${p.tag?`<div class="cat">${p.tag}</div>`:''}<h3>${p.title}</h3><div class="loc"><svg><use href="#i-pin"/></svg>${p.place}${p.client?' · '+p.client:''}</div>
-   ${p.progress!=null&&!done?`<div class="bar"><b style="width:${p.progress}%"></b></div>`:''}</div></article>`;
+   <div class="top">${!p.simple?`<span class="chip ${done?'done':''}"><i></i>${p.status||'In progress'}</span>`:''}${n>1?`<span class="chip cnt">${n} photos</span>`:''}</div>
+   <div class="info">${p.tag&&!p.simple?`<div class="cat">${p.tag}</div>`:''}<h3>${p.title}</h3><div class="loc"><svg><use href="#i-pin"/></svg>${p.place}${p.client&&!p.simple?' · '+p.client:''}</div>
+   ${p.progress!=null&&!done&&!p.simple?`<div class="bar"><b style="width:${p.progress}%"></b></div>`:''}</div></article>`;
 }
 function render(){
   const L=list(); grid.innerHTML=L.slice(0,limit).map((p,i)=>card(p,i)).join('');
@@ -623,8 +623,8 @@ grid.onclick=e=>{const c=e.target.closest('.pc');if(!c)return;const p=list()[+c.
 const lb=document.getElementById('lb');let lbImgs=[],lbIx=0;
 function openLB(p,start){
   lbImgs=(p.imgs||[]).map(I).concat(p.photos||[]); if(!lbImgs.length&&p.cover) lbImgs=[p.cover];
-  document.getElementById('lbT').textContent=p.title; document.getElementById('lbS').textContent=[p.tag,p.place,p.client,p.f==='tn'?'T.N Consultant':'M/s Lee Enterprise'].filter(Boolean).join(' · ');
-  document.getElementById('lbD').textContent=p.desc||'';
+  document.getElementById('lbT').textContent=p.title; document.getElementById('lbS').textContent=p.simple?(p.place||''):[p.tag,p.place,p.client,p.f==='tn'?'T.N Consultant':'M/s Lee Enterprise'].filter(Boolean).join(' · ');
+  document.getElementById('lbD').textContent=p.simple?'':(p.desc||'');
   const st=lb.querySelector('.stage'); st.style.display=lbImgs.length?'flex':'none';
   document.getElementById('lbTh').innerHTML=lbImgs.length>1?lbImgs.map((s,i)=>`<img src="${s.replace(/\.jpg$/,'_t.jpg').replace('_t_t','_t')}" data-i="${i}" alt="">`).join(''):'';
   show(start||0); lb.classList.add('open'); document.body.style.overflow='hidden';
