@@ -261,6 +261,11 @@ function briefRevise_(it) {
   const newP = (it.photos || []).slice(0, 6).map(function (d, i) { return savePhoto_(d, base + '_site' + i); }).filter(String);
   const newK = (it.sketches || []).slice(0, 8).map(function (d, i) { return savePhoto_(d, base + '_sketch' + i); }).filter(String);
   const photoUrls = (old.photoUrls || []).concat(newP), sketchUrls = (old.sketchUrls || []).concat(newK);
+  // re-print every earlier image in the revised PDF too
+  const toData = function (u) { try { const id = String(u).match(/id=([\w-]+)/)[1]; const bl = DriveApp.getFileById(id).getBlob();
+    return 'data:' + (bl.getContentType() || 'image/jpeg') + ';base64,' + Utilities.base64Encode(bl.getBytes()); } catch (e) { return ''; } };
+  it.photos = (old.photoUrls || []).map(toData).concat(it.photos || []).filter(String);
+  it.sketches = (old.sketchUrls || []).map(toData).concat(it.sketches || []).filter(String);
   const pdf = savePdf_(briefHtml_(it, ref, now, photoUrls, sketchUrls, rev), ref.replace(/\//g, '-') + ' Requirement R' + rev + ' - ' + it.client.name);
   it.rev = rev;
   const sh = briefSheet_(), c = it.client, s = it.site || {}, b = it.budget || {};
