@@ -191,7 +191,7 @@ function briefAdd_(it) {
   const body = 'Dear ' + c.name + ',\n\nThank you for sharing your requirements with M/s Lee Enterprise. Your reference number is ' + res.ref + '.\n\n' +
     'Your PRIVATE client page (only you and M/s Lee Enterprise can see it):\n' + portal + '\nClient code: ' + (pj.code || '-') + '\n' +
     'There you can follow progress, see your quotation and chat with us privately. Please do not share this code.\n\n' +
-    'Next steps:\n1. We will contact you to fix a physical site visit.\n2. After verification we will send the quotation with phase-wise payment (40% / 30% / 20% / 10%).\n\n' +
+    'Next steps:\n1. We will contact you to fix a physical site visit.\n2. After verification we will send the quotation with phase-wise payment (40% / 30% / 30%).\n\n' +
     'Your requirement form (PDF) is attached.\n\nRegards,\nEr. Lishi Kuli\nM/s Lee Enterprise\n' + FIRM.phone + '\n' + SITE_URL;
   try { if (c.email) MailApp.sendEmail({ to: c.email, subject: subj, body: body, attachments: [res.blob], name: 'M/s Lee Enterprise', replyTo: ownerEmail_() }); } catch (e) {}
   try { MailApp.sendEmail({ to: ownerEmail_(), subject: 'NEW REQUIREMENT ' + res.ref + ' — ' + c.name + ' (' + res.services + ')',
