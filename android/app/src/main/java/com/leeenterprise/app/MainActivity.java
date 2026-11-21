@@ -38,8 +38,13 @@ import java.nio.charset.StandardCharsets;
  */
 public class MainActivity extends Activity {
 
+    /** The app opens the live website, so every website update shows in the app at once. */
+    private static final String LIVE_HOST = "lishilee1211-design.github.io";
+    private static final String LIVE_START = "https://" + LIVE_HOST + "/leeenterprise/index.html";
+    /** Built-in copy, used only when the phone is offline. */
     private static final String HOST = "appassets.androidplatform.net";
     private static final String START = "https://" + HOST + "/assets/www/index.html";
+    private boolean usingOffline = false;
     private static final int PICK = 41;
     private static final int VOICE = 42;
     private TextToSpeech tts;
@@ -65,6 +70,7 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(false);
         s.setAllowContentAccess(true);
         s.setMediaPlaybackRequiresUserGesture(true);
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);
 
         web.addJavascriptInterface(new Bridge(), "LeeApp");
 
@@ -75,9 +81,23 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public void onReceivedError(WebView v, WebResourceRequest r, android.webkit.WebResourceError e) {
+                // No internet: show the built-in copy of the same page
+                if (r.isForMainFrame() && !usingOffline && LIVE_HOST.equals(r.getUrl().getHost())) {
+                    usingOffline = true;
+                    String path = r.getUrl().getPath();
+                    String page = path == null ? "index.html" : path.substring(path.lastIndexOf('/') + 1);
+                    if (page.isEmpty()) page = "index.html";
+                    v.loadUrl("https://" + HOST + "/assets/www/" + page);
+                    Toast.makeText(MainActivity.this, "Offline - showing saved copy", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 Uri u = r.getUrl();
-                if (HOST.equals(u.getHost())) return false;          // our own pages
+                if (HOST.equals(u.getHost())) return false;          // built-in pages
+                if (LIVE_HOST.equals(u.getHost()) && u.getPath() != null && u.getPath().startsWith("/leeenterprise")) return false; // live site
                 openOutside(u);                                       // WhatsApp, phone, email, maps, web
                 return true;
             }
@@ -116,7 +136,7 @@ public class MainActivity extends Activity {
         });
 
         if (state != null) web.restoreState(state);
-        else web.loadUrl(START);
+        else web.loadUrl(LIVE_START);
     }
 
     private void openOutside(Uri u) {

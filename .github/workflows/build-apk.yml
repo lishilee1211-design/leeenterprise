@@ -1,8 +1,13 @@
 name: Build APK
 
+# The app shows the live website, so website changes need NO new APK.
+# A new APK is built only when the app itself (android/ folder) changes, or by hand: Actions -> Build APK -> Run workflow.
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
 jobs:
