@@ -11,7 +11,7 @@ const FIRM = {
   name: 'M/s LEE ENTERPRISE',
   tag: 'Drone & LiDAR Survey · Civil Engineering Design · Construction',
   addr: 'Model Village, Naharlagun, Dist. Papum Pare, Arunachal Pradesh – 791110',
-  phone: '+91 76288 90089 · +91 87318 70700',
+  phone: '+91 76289 90989 · +91 87318 70700',
   email: 'lishilee1211@gmail.com',
   gst: 'GSTIN: 12GVTPK8036A1ZK · Udyam: NLG(R)-213'
 };
