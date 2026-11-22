@@ -107,6 +107,7 @@ html,body{height:100%;overflow:hidden;background:#0b1220;font-family:Poppins,sys
   <button id="bTop"><i>⤓</i>Top</button>
   <button id="b3d"><i>🧭</i>3D view</button>
   <button id="bBnd"><i>🟥</i>Boundary</button>
+  <button id="bClean"><i>👁</i>Clean</button>
   <span class="sep"></span>
   <button id="bSend" class="go"><i>💬</i>Send</button>
 </div>
@@ -182,7 +183,7 @@ fetch('models/'+MID+'/model.json').then(r=>{if(!r.ok)throw new Error('Model not 
   L.load(c.glb,g=>{
     model=g.scene; root.add(model); model.traverse(o=>{if(o.isMesh){meshes.push(o);if(o.material){o.material.side=THREE.DoubleSide}}});
     root.updateMatrixWorld(true);
-    buildBoundary(); view3d(true);
+    buildBoundary(); view3d(true); if(QP.get('clean')==='1') setClean(true);
     $('load').style.display='none'; setTimeout(()=>$('hint').style.opacity='.85',100);
   },e=>{if(e.total){const p=e.loaded/e.total;$('lb').style.width=(p*100).toFixed(0)+'%';$('lt').textContent='Loading 3D model… '+(p*100).toFixed(0)+'%  ('+(e.total/1048576).toFixed(1)+' MB)'}},
   err=>{$('lt').textContent='Could not load the 3D model. Please refresh.';$('ls').textContent=String(err&&err.message||err)});
@@ -212,7 +213,7 @@ function buildBoundary(){
   const c=toLocal(cx,cy,0); const z=dropZ(c.x,c.y); c.z=(z==null?0:z)+6;
   bndLabels.push(addLabel(c,'PLOT AREA '+cfg.area,'big'));
 }
-$('bBnd').onclick=()=>{showBnd=!showBnd; if(bndGroup)bndGroup.visible=showBnd; bndLabels.forEach(l=>l.el.style.display=showBnd?'':'none'); $('bBnd').classList.toggle('on',!showBnd); toast(showBnd?'Boundary shown':'Boundary hidden')};
+$('bBnd').onclick=()=>{if(clean)setClean(false);showBnd=!showBnd; if(bndGroup)bndGroup.visible=showBnd; bndLabels.forEach(l=>l.el.style.display=showBnd?'':'none'); $('bBnd').classList.toggle('on',!showBnd); toast(showBnd?'Boundary shown':'Boundary hidden')};
 
 /* ---------- labels ---------- */
 function addLabel(p,text,cls){const el=document.createElement('div');el.className='lbl '+(cls||'');el.textContent=text;document.body.appendChild(el);const L={p,el};labels.push(L);return L}
@@ -233,9 +234,21 @@ function view3d(now){const t=focusPt();const k=Math.pow(Math.max(1,1.25/camera.a
 function viewTop(){const t=focusPt();const k=Math.max(1,1.4/camera.aspect);fly(t.clone().add(new THREE.Vector3(0,170*k,0.01)),t)}
 $('bTop').onclick=viewTop; $('b3d').onclick=()=>view3d(false); $('north').onclick=viewTop;
 
+/* ---------- clean view (model only) ---------- */
+let clean=false;
+function setClean(on){ clean=on; if(on&&cur)finish();
+  ov.visible=!on;
+  labels.forEach(L=>{ if(on){L.el.dataset.d=L.el.style.display;L.el.style.display='none'} else {L.el.style.display=(L.el.classList.contains('bnd')||L.el.classList.contains('big'))?(showBnd?'':'none'):''} });
+  if(bndGroup) bndGroup.visible=showBnd;
+  $('panel').style.display=on?'none':''; $('tgl').style.display=on?'none':''; $('hint').style.display=on?'none':''; $('done').hidden=true;
+  $('bClean').classList.toggle('on',on); $('bClean').innerHTML=on?'<i>👁</i>Show all':'<i>👁</i>Clean';
+  toast(on?'Clean view — 3D model only':'Boundary and marks shown');
+}
+$('bClean').onclick=()=>setClean(!clean);
+
 /* ---------- tools ---------- */
 $('tools').addEventListener('click',e=>{const b=e.target.closest('button[data-t]');if(!b)return;setTool(b.dataset.t)});
-function setTool(t){ if(cur) finish(); tool=t; [...document.querySelectorAll('#tools button[data-t]')].forEach(x=>x.classList.toggle('on',x.dataset.t===t));
+function setTool(t){ if(cur) finish(); if(clean&&t!=='view') setClean(false); tool=t; [...document.querySelectorAll('#tools button[data-t]')].forEach(x=>x.classList.toggle('on',x.dataset.t===t));
   const H={view:'Drag to <b>rotate / tilt</b> · two fingers or right-drag to <b>pan</b> · pinch or wheel to <b>zoom</b>',point:'<b>Tap</b> on the model to mark a point (E, N, RL)',dist:'<b>Tap</b> points along a line · then <b>Finish</b>',area:'<b>Tap</b> the corners of the area · then <b>Finish</b>',height:'<b>Tap</b> two points to get the level difference'};
   $('hint').innerHTML=H[t]; $('done').hidden=true;
 }
