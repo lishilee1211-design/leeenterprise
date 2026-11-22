@@ -250,6 +250,16 @@ footer .brand b{color:#fff}
 .lb .stage img{max-width:100%;max-height:100%;border-radius:12px;object-fit:contain}
 .lb .nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:0;color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer}
 .lb .prev{left:10px}.lb .next{right:10px}
+.lb.open{overflow-y:auto}
+.lb .stage{flex:0 0 64vh;height:64vh}
+.lb .stage img{max-height:100%}
+@media(max-width:700px){.lb .stage{padding:0 8px;flex-basis:40vh;height:40vh}.lb .nav{width:38px;height:38px;font-size:20px;background:rgba(0,0,0,.45)}}
+.lb .ext{max-width:900px;margin:0 auto;padding:2px 18px 8px;text-align:center}
+.lb .ext .kv{display:inline-grid;grid-template-columns:auto 1fr;gap:3px 14px;text-align:left;font-size:13px;color:#dbe6fb;background:rgba(255,255,255,.07);border-radius:12px;padding:10px 14px;margin-bottom:8px;max-width:100%}
+.lb .ext .kv b{color:#9fb1d1;font-weight:500;white-space:nowrap}
+.lb .ext .nt{color:#ffe680;font-weight:700;font-size:13.5px;margin:4px 0 8px}
+.lb .ext a{display:inline-flex;align-items:center;gap:6px;margin:4px;padding:10px 15px;border-radius:12px;font-weight:700;font-size:13px;text-decoration:none;background:#eef3fb;color:#0a2350}
+.lb .ext a.m3{background:linear-gradient(135deg,#2e9b4a,#1a5fd0);color:#fff}
 .lb .desc{color:#c8d6ee;font-size:14px;max-width:900px;margin:0 auto;padding:12px 18px 6px;text-align:center}
 .lb .thumbs{display:flex;gap:8px;justify-content:center;padding:10px 18px calc(16px + var(--safe-b));overflow-x:auto}
 .lb .thumbs img{width:70px;height:52px;object-fit:cover;border-radius:8px;opacity:.5;cursor:pointer;flex:0 0 auto;border:2px solid transparent}
@@ -563,7 +573,7 @@ footer .brand b{color:#fff}
 <div class="lb" id="lb" role="dialog" aria-modal="true">
   <div class="bar"><div><b id="lbT"></b><small id="lbS"></small></div><button class="x" id="lbX" aria-label="Close">×</button></div>
   <div class="stage"><button class="nav prev" id="lbP" aria-label="Previous">‹</button><img id="lbI" alt=""><button class="nav next" id="lbN" aria-label="Next">›</button></div>
-  <p class="desc" id="lbD"></p><div id="lbV" style="text-align:center;padding:0 18px 10px"></div>
+  <p class="desc" id="lbD"></p><div class="ext" id="lbE"></div><div id="lbV" style="text-align:center;padding:0 18px 10px"></div>
   <div class="thumbs" id="lbTh"></div>
 </div>
 
@@ -581,7 +591,7 @@ footer .brand b{color:#fff}
 const I=n=>'img/'+n+'.jpg', T=n=>'img/'+n+'_t.jpg';
 const P=[
  // ---- Lee Enterprise (current) ----
- {f:'lee',simple:1,by:'Work in progress · Survey 22-11-2026',cat:'survey',tag:'Drone · DGPS · Plot Survey',title:'Plot Boundary & Area Survey — Kanken',place:'Model Village, Naharlagun, Papum Pare',client:'Private client',status:'In progress',desc:'DGPS boundary survey of the compound wall and a GCP-controlled drone flight (101 photos, 5 cm orthophoto). Boundary and area plan on the orthophoto with side lengths and corner coordinates — plot area 5,395.99 m² (1.333 acre).',imgs:['lee_kanken2','lee_kanken1']},
+ {f:'lee',simple:1,by:'Work in progress · Residential design',cat:'survey',tag:'Drone · DGPS · Plot Survey',title:'Plot Boundary & Area Survey — Kanken',place:'Model Village, Naharlagun, Papum Pare',client:'Private client',status:'In progress',desc:'DGPS boundary survey of the compound wall and a GCP-controlled drone flight. Boundary and area plan on the orthophoto with side lengths and corner coordinates, plus a 3D model you can rotate, measure and mark.',note:'Design of residential building is in progress.',model:'model.html?m=kanken',details:[["Plot area", "5,395.99 m² (1.333 acre · 0.540 ha)"], ["Perimeter", "364.79 m"], ["Boundary", "19 DGPS points on the existing compound wall"], ["Side lengths (m)", "B3–B4 3.21 · B4–B5 13.62 · B5–B6 34.50 · B6–B7 19.70 · B7–B8 22.56 · B8–B9 3.17 · B9–B10 4.60 · B10–B11 3.71 · B11–B12 10.74 · B12–B13 25.04 · B13–B14 25.66 · B14–B15 51.59 · B15–B16 21.38 · B16–B17 8.26 · B17–B19 60.38 · B19–B20 30.37 · B20–B21 2.76 · B21–B22 5.60 · B22–B3 17.93"], ["Survey", "DGPS + drone (101 photos, 5 cm orthophoto), 22-11-2026"], ["Coordinates", "UTM Zone 46N (WGS 84)"], ["Status", "Survey, boundary & area plan complete"]],docs:[["Plot plan with dimensions (A3 PDF)", "docs/kanken/Kanken_Plot_Dimensions_A3.pdf"], ["Plot area plan (A3 PDF)", "docs/kanken/Kanken_Plot_Area_A3.pdf"], ["Orthophoto with dimensions (JPG)", "docs/kanken/Kanken_Orthophoto_with_Dimensions.jpg"]],imgs:['lee_kanken1','lee_kanken2','lee_kanken3','lee_kanken4']},
  {f:'lee',simple:1,cat:'sports',tag:'Sports · Landscape',title:'Multi-Purpose Sports Complex',place:'Burm, Papum Pare',client:'Water Resources Dept.',status:'In progress',desc:'Riverside sports complex on a drone orthophoto: 10-a-side football, volleyball, basketball, lawn tennis, badminton, swimming pool, jogging trail, restaurant and parking — with a 3D walkthrough.',imgs:['lee_burm_ortho','lee_burm_layout']},
  {f:'lee',simple:1,cat:'infra',tag:'Water Supply · Hydraulics',title:'Poma Stream Source Development & Gravity Supply Scheme',place:'Poma',client:'Urban Development & Housing Dept.',status:'In progress',desc:'Feasibility, headworks, desilting and intake chambers, 110 mm HDPE gravity main, delivery tank, monsoon flood check and flow simulation — drawn on DGPS contours.',imgs:['lee_poma_layout','lee_poma_contour']},
  {f:'lee',simple:1,cat:'building',tag:'Government Building',title:'PWD Sub-Division Office, Nyapin',place:'Nyapin Circle',client:'PWD',status:'In progress',desc:'Architectural and structural design (ground floor, designed for G+1), furniture layout, 3D views, staircase, water tank and septic tank.',imgs:['lee_nyapin','lee_nyapin_interior','lee_nyapin_iso2']},
@@ -669,7 +679,7 @@ function card(p,i){
   const n=(p.imgs?p.imgs.length:0)+(p.photos?p.photos.length:0);
   const done=/complete/i.test(p.status);
   return `<article class="pc" data-i="${i}" style="animation-delay:${(i%9)*40}ms">${cover}
-   <div class="top">${!p.simple?`<span class="chip ${done?'done':''}"><i></i>${p.status||'In progress'}</span>`:''}${p.video?'<span class="chip cnt">▶ Video</span>':n>1?`<span class="chip cnt">${n} photos</span>`:''}</div>
+   <div class="top">${!p.simple?`<span class="chip ${done?'done':''}"><i></i>${p.status||'In progress'}</span>`:''}${p.model?'<span class="chip cnt">🧊 3D model</span>':''}${p.video?'<span class="chip cnt">▶ Video</span>':n>1?`<span class="chip cnt">${n} photos</span>`:''}</div>
    <div class="info">${p.tag&&!p.simple?`<div class="cat">${p.tag}</div>`:''}<h3>${p.title}</h3><div class="loc"><svg><use href="#i-pin"/></svg>${p.place}${p.client&&!p.simple?' · '+p.client:''}</div>${p.by?`<div class="by">${p.by}</div>`:''}
    ${p.progress!=null&&!done&&!p.simple?`<div class="bar"><b style="width:${p.progress}%"></b></div>`:''}</div></article>`;
 }
@@ -692,6 +702,7 @@ function openLB(p,start){
   document.getElementById('lbV').innerHTML=p.video?`<div style="max-width:900px;margin:0 auto;aspect-ratio:16/9"><iframe src="${p.video.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/')}" style="width:100%;height:100%;border:0;border-radius:12px" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe></div>`:'';
   document.getElementById('lbT').textContent=p.title; document.getElementById('lbS').textContent=p.simple?[p.place,p.by].filter(Boolean).join(' · '):[p.tag,p.place,p.client,p.f==='tn'?'T.N Consultant':'M/s Lee Enterprise'].filter(Boolean).join(' · ');
   document.getElementById('lbD').textContent=p.simple?'':(p.desc||'');
+  document.getElementById('lbE').innerHTML=(p.details?`<div class="kv">${p.details.map(d=>`<b>${d[0]}</b><span>${d[1]}</span>`).join('')}</div>`:'')+(p.note?`<div class="nt">📝 ${p.note}</div>`:'')+((p.model||p.docs)?`<div>${p.model?`<a class="m3" href="${p.model}">🧊 Open 3D model — rotate, measure &amp; mark</a>`:''}${(p.docs||[]).map(d=>`<a href="${d[1]}" target="_blank" rel="noopener">📄 ${d[0]}</a>`).join('')}</div>`:'');
   const st=lb.querySelector('.stage'); st.style.display=lbImgs.length?'flex':'none';
   document.getElementById('lbTh').innerHTML=lbImgs.length>1?lbImgs.map((s,i)=>`<img src="${s.replace(/\.jpg$/,'_t.jpg').replace('_t_t','_t')}" data-i="${i}" alt="">`).join(''):'';
   show(start||0); lb.classList.add('open'); document.body.style.overflow='hidden';

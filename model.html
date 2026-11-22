@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>3D Site Model — M/s Lee Enterprise</title>
+<meta name="theme-color" content="#071a3d">
+<meta property="og:title" content="3D Site Model — M/s LEE ENTERPRISE">
+<meta property="og:description" content="Rotate, tilt and measure the drone 3D model. Mark areas and send your comments.">
+<meta property="og:image" content="https://lishilee1211-design.github.io/leeenterprise/img/lee_kanken1.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#071a3d;--navy2:#0a2350;--blue:#1a5fd0;--mint:#7ff0a8;--red:#e23b3b;--yel:#ffd400;--glass:rgba(7,26,61,.82);--ink:#0e1a2b}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%;overflow:hidden;background:#0b1220;font-family:Poppins,system-ui,sans-serif;color:#fff;-webkit-tap-highlight-color:transparent}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.top{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-left));background:linear-gradient(180deg,rgba(5,16,42,.92),rgba(5,16,42,.55) 70%,transparent);z-index:5;pointer-events:none}
+.top>*{pointer-events:auto}
+.top img{width:38px;height:38px;border-radius:50%;background:#fff;flex:none}
+.top .t b{font-family:Rajdhani,sans-serif;font-size:19px;letter-spacing:.03em;display:block;line-height:1.05}
+.top .t small{font-size:11.5px;color:#c4d3ee;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw}
+.top a.back{margin-left:auto;color:#dbe6fb;font-size:12.5px;text-decoration:none;border:1px solid rgba(255,255,255,.3);padding:7px 11px;border-radius:10px;background:rgba(0,0,0,.2);white-space:nowrap}
+.tools{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom));display:flex;gap:6px;padding:7px;background:var(--glass);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(10px);z-index:6;max-width:calc(100vw - 16px);overflow-x:auto;scrollbar-width:none}
+.tools::-webkit-scrollbar{display:none}
+.tools button{flex:none;min-width:58px;border:0;border-radius:12px;background:transparent;color:#e7eefc;font:600 11px Poppins,sans-serif;padding:7px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.tools button i{font-style:normal;font-size:19px;line-height:1}
+.tools button.on{background:linear-gradient(135deg,#1a5fd0,#0a2350);color:#fff;box-shadow:0 0 0 1px rgba(127,240,168,.5) inset}
+.tools .sep{width:1px;background:rgba(255,255,255,.15);margin:4px 2px;flex:none}
+.tools button.go{background:linear-gradient(135deg,#2e9b4a,#1d6e33);color:#fff}
+.hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 74px);background:rgba(0,0,0,.66);padding:8px 14px;border-radius:999px;font-size:12.5px;z-index:6;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
+.hint b{color:var(--yel)}
+.done{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 112px);z-index:7;display:flex;gap:8px}
+.done button{border:0;border-radius:12px;padding:10px 16px;font:700 13px Poppins;cursor:pointer}
+.done .ok{background:var(--yel);color:#111}.done .un{background:#fff;color:#0a2350}
+.panel{position:fixed;right:max(10px,env(safe-area-inset-right));top:64px;width:min(330px,calc(100vw - 20px));max-height:calc(100vh - 190px);overflow:auto;background:var(--glass);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px;z-index:6;backdrop-filter:blur(10px);font-size:12.5px}
+.panel h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.panel h4 span{margin-left:auto;font-weight:500;color:#b9c8e4;font-size:11px;cursor:pointer}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin-bottom:8px}
+.kv b{color:#b9c8e4;font-weight:500}
+.m{background:rgba(255,255,255,.06);border-radius:11px;padding:8px 10px;margin-top:7px;position:relative}
+.m .h{font-weight:700;display:flex;align-items:center;gap:6px}
+.m .h i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.m .x{position:absolute;right:8px;top:6px;border:0;background:none;color:#ffb3b3;font-size:15px;cursor:pointer}
+.m .v{color:#dfe8f8;margin-top:3px;line-height:1.45;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;white-space:pre-wrap}
+.m input{width:100%;margin-top:6px;padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.25);color:#fff;font:12px Poppins}
+.acc{color:#9fb1d1;font-size:10.8px;margin-top:8px;line-height:1.4}
+.note{background:rgba(255,212,0,.13);border:1px solid rgba(255,212,0,.35);border-radius:10px;padding:7px 9px;margin:6px 0 8px;color:#ffe680;font-weight:600}
+.lbl{position:fixed;left:0;top:0;transform:translate(-50%,-130%);background:rgba(0,0,0,.72);color:#fff;font:700 11px Poppins;padding:3px 7px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:4}
+.lbl.area{background:var(--yel);color:#111;font-size:12px}
+.lbl.dist{background:#fff;color:#0a2350}
+.lbl.bnd{background:var(--red);font-size:10px;padding:2px 5px}
+.lbl.big{background:#fff;color:var(--red);font-size:13px;border:2px solid var(--red)}
+.north{position:fixed;left:max(12px,env(safe-area-inset-left));top:66px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);z-index:5;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer}
+.north svg{width:30px;height:30px;transition:transform .05s linear}
+#load{position:fixed;inset:0;display:grid;place-items:center;background:#0b1220;z-index:20;text-align:center}
+#load .bx{width:min(320px,80vw)}
+#load img{width:72px;height:72px;border-radius:50%;background:#fff;margin-bottom:14px}
+#load .bar{height:6px;background:rgba(255,255,255,.12);border-radius:9px;overflow:hidden;margin-top:12px}
+#load .bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#7ff0a8,#1a5fd0);transition:width .2s}
+#load small{color:#aebbd6;display:block;margin-top:8px}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;display:none;align-items:flex-end;justify-content:center}
+.sheet.open{display:flex}
+.sheet .card{background:#fff;color:var(--ink);width:min(560px,100vw);border-radius:20px 20px 0 0;padding:18px 18px max(18px,env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media(min-width:700px){.sheet{align-items:center}.sheet .card{border-radius:20px}}
+.card h3{color:var(--navy2);font-size:18px}.card p.s{color:#617089;font-size:13px;margin:2px 0 12px}
+.card label{display:block;font-size:12.5px;font-weight:600;color:#33445e;margin-bottom:10px}
+.card input,.card textarea{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1.5px solid #e2e8f2;border-radius:12px;font:14px Poppins;background:#fbfcfe}
+.card textarea{min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.card .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.card .row button,.card .row a{flex:1;min-width:140px;border:0;border-radius:12px;padding:12px;font:700 14px Poppins;cursor:pointer;text-align:center;text-decoration:none}
+.bp{background:linear-gradient(135deg,#1a5fd0,#0a2350);color:#fff}.bw{background:#25d366;color:#fff}.bl{background:#eef3fb;color:#0a2350}
+.card img.snap{width:100%;border-radius:12px;margin-bottom:10px;border:1px solid #e2e8f2}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#0a2350;color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;z-index:40;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+.tgl{position:fixed;right:max(10px,env(safe-area-inset-right));top:64px;z-index:7;border:0;border-radius:12px;padding:8px 11px;background:var(--glass);color:#fff;font:600 12px Poppins;display:none}
+@media(max-width:700px){.panel{top:auto;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 72px);max-height:42vh;display:none}.panel.show{display:block}.tgl{display:block}.hint{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 74px)}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="load"><div class="bx"><img src="icons/icon-192.png" alt=""><div style="font-family:Rajdhani,sans-serif;font-size:22px;letter-spacing:.04em">M/s LEE ENTERPRISE</div><div id="lt" style="font-size:13px;color:#c4d3ee">Loading 3D model…</div><div class="bar"><b id="lb"></b></div><small id="ls">Large file — please wait on mobile data</small></div></div>
+
+<div class="top"><img src="icons/icon-192.png" alt=""><div class="t"><b>M/s LEE ENTERPRISE</b><small id="ttl">3D Site Model</small></div><a class="back" href="index.html#projects">← Projects</a></div>
+<div class="north" id="north" title="North up (top view)"><svg viewBox="0 0 30 30"><path d="M15 1 L21 22 L15 18 L9 22 Z" fill="#e23b3b"/><text x="15" y="29.5" text-anchor="middle" font-size="8" font-weight="700" fill="#0a2350" font-family="Arial">N</text></svg></div>
+<button class="tgl" id="tgl">☰ Details</button>
+
+<div class="panel" id="panel">
+  <h4>📐 Site details</h4>
+  <div class="kv" id="kv"></div>
+  <div class="note" id="note" hidden></div>
+  <h4>🖊 Your marks <span id="clr">Clear all</span></h4>
+  <div id="ml"><div style="color:#9fb1d1">Pick a tool below and tap on the model to mark a point, a distance or an area.</div></div>
+  <div class="acc" id="acc"></div>
+</div>
+
+<div class="hint" id="hint">Drag to <b>rotate / tilt</b> · two fingers or right-drag to <b>pan</b> · pinch or wheel to <b>zoom</b></div>
+<div class="done" id="done" hidden><button class="un" id="undo">↶ Undo</button><button class="ok" id="fin">✓ Finish</button></div>
+
+<div class="tools" id="tools">
+  <button data-t="view" class="on"><i>🖐</i>View</button>
+  <button data-t="point"><i>📍</i>Point</button>
+  <button data-t="dist"><i>📏</i>Distance</button>
+  <button data-t="area"><i>⬠</i>Area</button>
+  <button data-t="height"><i>↕</i>Height</button>
+  <span class="sep"></span>
+  <button id="bTop"><i>⤓</i>Top</button>
+  <button id="b3d"><i>🧭</i>3D view</button>
+  <button id="bBnd"><i>🟥</i>Boundary</button>
+  <span class="sep"></span>
+  <button id="bSend" class="go"><i>💬</i>Send</button>
+</div>
+
+<div class="sheet" id="sheet"><div class="card">
+  <h3>Send your marks to M/s Lee Enterprise</h3>
+  <p class="s">Your marks and a picture of this view go to the project as a comment.</p>
+  <img class="snap" id="snap" alt="">
+  <label>Your name<input id="fName" autocomplete="name" placeholder="Name"></label>
+  <label>Phone (optional)<input id="fPhone" inputmode="tel" placeholder="+91 …"></label>
+  <label>Project code <small style="font-weight:400;color:#617089">(given by M/s Lee Enterprise — leave blank to send on WhatsApp)</small><input id="fCode" placeholder="e.g. KK1234" style="text-transform:uppercase"></label>
+  <label>Comment<textarea id="fText"></textarea></label>
+  <div class="row"><button class="bp" id="sGo">Send to project</button><a class="bw" id="sWa" target="_blank" rel="noopener">WhatsApp</a></div>
+  <div class="row"><button class="bl" id="sCopy">Copy text</button><button class="bl" id="sCsv">Download CSV</button><button class="bl" id="sX">Close</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="lib/three/three.min.js"></script>
+<script src="lib/three/OrbitControls.js"></script>
+<script src="lib/three/GLTFLoader.js"></script>
+<script src="lib/three/DRACOLoader.js"></script>
+<script src="config.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const QP=new URLSearchParams(location.search);
+const MID=(QP.get('m')||'kanken').replace(/[^a-z0-9_-]/gi,'');
+const WA='917628890089';
+const COL={point:0x7ff0a8,dist:0xffffff,area:0xffd400,height:0x5ab0ff};
+const CSS={point:'#7ff0a8',dist:'#ffffff',area:'#ffd400',height:'#5ab0ff'};
+const NAME={point:'Point',dist:'Distance',area:'Area',height:'Height'};
+let cfg=null, model=null, meshes=[], tool='view', cur=null, marks=[], seq=0, bndGroup=null, bndLabels=[], showBnd=true, labels=[];
+const toast=(t)=>{const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)};
+const server=()=>{try{const v=localStorage.getItem('lee_url');if(v)return JSON.parse(v)}catch(e){}return window.LEE_SERVER||''};
+
+/* ---------- three ---------- */
+const canvas=$('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x0b1220);
+scene.add(new THREE.AmbientLight(0xffffff,1));
+const camera=new THREE.PerspectiveCamera(50,1,0.1,5000);
+const controls=new THREE.OrbitControls(camera,canvas);
+controls.enableDamping=true; controls.dampingFactor=0.12; controls.screenSpacePanning=true;
+controls.maxPolarAngle=Math.PI*0.495; controls.minDistance=3; controls.maxDistance=900;
+controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
+const root=new THREE.Group(); root.rotation.x=-Math.PI/2; scene.add(root);   // model Z-up -> scene Y-up
+const ov=new THREE.Group(); root.add(ov);                                       // overlays in model frame
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+addEventListener('resize',resize); resize();
+
+/* ---------- coordinates (model local <-> survey) ---------- */
+const toSurvey=v=>({e:v.x+cfg.rtc[0]+cfg.shift[0], n:v.y+cfg.rtc[1]+cfg.shift[1], rl:v.z+cfg.rtc[2]+cfg.shift[2]});
+const toLocal=(e,n,rl)=>new THREE.Vector3(e-cfg.rtc[0]-cfg.shift[0], n-cfg.rtc[1]-cfg.shift[1], (rl==null?0:rl)-cfg.rtc[2]-cfg.shift[2]);
+const f3=x=>x.toFixed(3), f2=x=>x.toFixed(2);
+const fmtA=a=>a.toLocaleString('en-IN',{maximumFractionDigits:2,minimumFractionDigits:2});
+
+const ray=new THREE.Raycaster();
+function dropZ(x,y){ // surface height in model frame at local x,y
+  const top=root.localToWorld(new THREE.Vector3(x,y,1000)), bot=root.localToWorld(new THREE.Vector3(x,y,-1000));
+  ray.set(top,bot.sub(top).normalize()); const h=ray.intersectObjects(meshes,false)[0];
+  return h?root.worldToLocal(h.point.clone()).z:null;
+}
+
+/* ---------- load ---------- */
+fetch('models/'+MID+'/model.json').then(r=>{if(!r.ok)throw new Error('Model not found');return r.json()}).then(c=>{
+  cfg=c; document.title=c.title+' — 3D | M/s Lee Enterprise'; $('ttl').textContent=c.title+' · '+c.place;
+  $('kv').innerHTML=[['Plot area',c.area],['Perimeter',c.perimeter],['Boundary',c.boundary.length+' DGPS points'],['Survey',c.survey],['Coordinates',c.crs]].filter(x=>x[1]).map(x=>`<b>${x[0]}</b><span>${x[1]}</span>`).join('');
+  if(c.note){$('note').textContent='📝 '+c.note;$('note').hidden=false}
+  $('acc').textContent=c.accuracy||'';
+  const L=new THREE.GLTFLoader(); const D=new THREE.DRACOLoader(); D.setDecoderPath('lib/three/draco/'); L.setDRACOLoader(D);
+  L.load(c.glb,g=>{
+    model=g.scene; root.add(model); model.traverse(o=>{if(o.isMesh){meshes.push(o);if(o.material){o.material.side=THREE.DoubleSide}}});
+    root.updateMatrixWorld(true);
+    buildBoundary(); view3d(true);
+    $('load').style.display='none'; setTimeout(()=>$('hint').style.opacity='.85',100);
+  },e=>{if(e.total){const p=e.loaded/e.total;$('lb').style.width=(p*100).toFixed(0)+'%';$('lt').textContent='Loading 3D model… '+(p*100).toFixed(0)+'%  ('+(e.total/1048576).toFixed(1)+' MB)'}},
+  err=>{$('lt').textContent='Could not load the 3D model. Please refresh.';$('ls').textContent=String(err&&err.message||err)});
+}).catch(e=>{$('lt').textContent=e.message});
+
+/* ---------- boundary ---------- */
+function tube(pts,color,r){
+  const g=new THREE.Group(); const m=new THREE.MeshBasicMaterial({color,depthTest:true});
+  for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];const d=b.clone().sub(a);const L=d.length();if(L<1e-6)continue;
+    const cy=new THREE.Mesh(new THREE.CylinderGeometry(r,r,L,6,1,true),m);cy.position.copy(a).add(b).multiplyScalar(.5);
+    cy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());g.add(cy)}
+  return g;
+}
+function buildBoundary(){
+  const B=cfg.boundary; if(!B||!B.length) return;
+  bndGroup=new THREE.Group(); ov.add(bndGroup);
+  const pts=[]; const corners=[];
+  for(let i=0;i<B.length;i++){const a=B[i],b=B[(i+1)%B.length];const A=toLocal(a.e,a.n,0),Bv=toLocal(b.e,b.n,0);const L=Math.hypot(Bv.x-A.x,Bv.y-A.y);const k=Math.max(1,Math.ceil(L/3.0));
+    for(let j=0;j<k;j++){const t=j/k;const x=A.x+(Bv.x-A.x)*t,y=A.y+(Bv.y-A.y)*t;let z=dropZ(x,y);if(z==null)z=(a.rl!=null?toLocal(0,0,a.rl).z:0);pts.push(new THREE.Vector3(x,y,z+0.55));if(j===0)corners.push({p:pts[pts.length-1],id:a.id})}}
+  pts.push(pts[0].clone());
+  bndGroup.add(tube(pts,0xe23b3b,0.32));
+  const gl=new THREE.BufferGeometry().setFromPoints(pts);const ln=new THREE.Line(gl,new THREE.LineBasicMaterial({color:0xff4040,depthTest:false,transparent:true,opacity:.55}));ln.renderOrder=7;bndGroup.add(ln);
+  const s=new THREE.SphereGeometry(0.35,10,8), sm=new THREE.MeshBasicMaterial({color:0xffffff});
+  corners.forEach(c=>{const m=new THREE.Mesh(s,sm);m.position.copy(c.p);bndGroup.add(m);bndLabels.push(addLabel(c.p,c.id,'bnd'))});
+  // area label at centroid
+  let cx=0,cy=0; B.forEach(b=>{cx+=b.e;cy+=b.n}); cx/=B.length; cy/=B.length; cx+=8; // nudge onto open ground
+  const c=toLocal(cx,cy,0); const z=dropZ(c.x,c.y); c.z=(z==null?0:z)+6;
+  bndLabels.push(addLabel(c,'PLOT AREA '+cfg.area,'big'));
+}
+$('bBnd').onclick=()=>{showBnd=!showBnd; if(bndGroup)bndGroup.visible=showBnd; bndLabels.forEach(l=>l.el.style.display=showBnd?'':'none'); $('bBnd').classList.toggle('on',!showBnd); toast(showBnd?'Boundary shown':'Boundary hidden')};
+
+/* ---------- labels ---------- */
+function addLabel(p,text,cls){const el=document.createElement('div');el.className='lbl '+(cls||'');el.textContent=text;document.body.appendChild(el);const L={p,el};labels.push(L);return L}
+function delLabel(L){if(!L)return;L.el.remove();labels=labels.filter(x=>x!==L)}
+const tmp=new THREE.Vector3();
+function placeLabels(){const w=innerWidth,h=innerHeight;labels.forEach(L=>{if(L.el.style.display==='none')return;tmp.copy(L.p);root.localToWorld(tmp);tmp.project(camera);
+  if(tmp.z>1||tmp.z<-1){L.el.style.visibility='hidden';return}L.el.style.visibility='';L.el.style.left=((tmp.x+1)/2*w)+'px';L.el.style.top=((1-tmp.y)/2*h)+'px'})}
+
+/* ---------- views ---------- */
+let anim=null;
+function fly(pos,tgt,ms){const p0=camera.position.clone(),t0=controls.target.clone(),st=performance.now();ms=ms||700;anim=t=>{let k=Math.min(1,(t-st)/ms);k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;camera.position.lerpVectors(p0,pos,k);controls.target.lerpVectors(t0,tgt,k);if(k>=1)anim=null}}
+function focusPt(){ // plot centre in world
+  let c=new THREE.Vector3(0,0,0);
+  if(cfg.boundary&&cfg.boundary.length){let e=0,n=0;cfg.boundary.forEach(b=>{e+=b.e;n+=b.n});c=toLocal(e/cfg.boundary.length,n/cfg.boundary.length,0);const z=dropZ(c.x,c.y);c.z=z==null?0:z}
+  return root.localToWorld(c.clone());
+}
+function view3d(now){const t=focusPt();const k=Math.pow(Math.max(1,1.25/camera.aspect),0.6);const p=t.clone().add(new THREE.Vector3(-70,95,120).multiplyScalar(k));if(now){camera.position.copy(p);controls.target.copy(t);controls.update()}else fly(p,t)}
+function viewTop(){const t=focusPt();const k=Math.max(1,1.4/camera.aspect);fly(t.clone().add(new THREE.Vector3(0,170*k,0.01)),t)}
+$('bTop').onclick=viewTop; $('b3d').onclick=()=>view3d(false); $('north').onclick=viewTop;
+
+/* ---------- tools ---------- */
+$('tools').addEventListener('click',e=>{const b=e.target.closest('button[data-t]');if(!b)return;setTool(b.dataset.t)});
+function setTool(t){ if(cur) finish(); tool=t; [...document.querySelectorAll('#tools button[data-t]')].forEach(x=>x.classList.toggle('on',x.dataset.t===t));
+  const H={view:'Drag to <b>rotate / tilt</b> · two fingers or right-drag to <b>pan</b> · pinch or wheel to <b>zoom</b>',point:'<b>Tap</b> on the model to mark a point (E, N, RL)',dist:'<b>Tap</b> points along a line · then <b>Finish</b>',area:'<b>Tap</b> the corners of the area · then <b>Finish</b>',height:'<b>Tap</b> two points to get the level difference'};
+  $('hint').innerHTML=H[t]; $('done').hidden=true;
+}
+function pick(cx,cy){const r=canvas.getBoundingClientRect();const v=new THREE.Vector2(((cx-r.left)/r.width)*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(v,camera);const h=ray.intersectObjects(meshes,false)[0];return h?root.worldToLocal(h.point.clone()):null}
+let down=null;
+canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now(),n:(down&&down.n)||0}; if(e.pointerType==='touch'){touches++;}});
+let touches=0;
+canvas.addEventListener('pointerup',e=>{ if(e.pointerType==='touch'){touches=Math.max(0,touches-1)}
+  if(!down||tool==='view')return; const d=Math.hypot(e.clientX-down.x,e.clientY-down.y); const dt=performance.now()-down.t; down=null;
+  if(d>7||dt>600||touches>0)return; const p=pick(e.clientX,e.clientY); if(!p){toast('Tap on the model');return} addPt(p)});
+canvas.addEventListener('pointercancel',()=>{touches=0;down=null});
+
+const sph=new THREE.SphereGeometry(1,12,10);
+function markerSize(){return Math.max(0.18,Math.min(1.2,camera.position.distanceTo(controls.target)/260))}
+function addPt(p){
+  if(!cur){cur={id:++seq,type:tool,pts:[],objs:[],lbls:[],name:''}}
+  const lift=p.clone(); lift.z+=0.05;
+  cur.pts.push(lift);
+  const m=new THREE.Mesh(sph,new THREE.MeshBasicMaterial({color:COL[cur.type],depthTest:false}));m.renderOrder=10;m.scale.setScalar(markerSize());m.position.copy(lift);ov.add(m);cur.objs.push(m);
+  redraw(cur);
+  if(cur.type==='point'){finish();return}
+  if(cur.type==='height'&&cur.pts.length===2){finish();return}
+  $('done').hidden=false;
+}
+function redraw(M){
+  M.objs.filter(o=>o.isLine||o.userData.fill).forEach(o=>{ov.remove(o);o.geometry.dispose()}); M.objs=M.objs.filter(o=>!(o.isLine||o.userData.fill));
+  M.lbls.forEach(delLabel); M.lbls=[];
+  const P=M.pts; if(!P.length)return;
+  if(P.length>1){const arr=P.slice(); if(M.type==='area'&&P.length>2)arr.push(P[0]);
+    const g=new THREE.BufferGeometry().setFromPoints(arr);const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:COL[M.type],depthTest:false,transparent:true}));l.renderOrder=9;ov.add(l);M.objs.push(l);
+    for(let i=0;i<arr.length-1;i++){const a=arr[i],b=arr[i+1];const L=Math.hypot(b.x-a.x,b.y-a.y);if(M.type!=='height'&&L>0.3)M.lbls.push(addLabel(a.clone().add(b).multiplyScalar(.5),f2(L)+' m','dist'))}}
+  if(M.type==='area'&&P.length>2){
+    try{const shape=P.map(p=>new THREE.Vector2(p.x,p.y));const tri=THREE.ShapeUtils.triangulateShape(shape,[]);const pos=[];tri.forEach(t=>t.forEach(i=>pos.push(P[i].x,P[i].y,P[i].z+0.02)));
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));const f=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xffd400,transparent:true,opacity:.33,side:THREE.DoubleSide,depthTest:false}));f.renderOrder=8;f.userData.fill=1;ov.add(f);M.objs.push(f)}catch(e){}
+    const r=calc(M);const c=P.reduce((a,p)=>a.add(p),new THREE.Vector3()).multiplyScalar(1/P.length);c.z+=1.5;M.lbls.push(addLabel(c,fmtA(r.area)+' m²','area'))}
+  if(M.type==='point'){const s=toSurvey(P[0]);M.lbls.push(addLabel(P[0],'RL '+f2(s.rl)))}
+  if(M.type==='height'&&P.length===2){const a=toSurvey(P[0]),b=toSurvey(P[1]);M.lbls.push(addLabel(P[1],'ΔH '+(b.rl-a.rl>=0?'+':'')+f2(b.rl-a.rl)+' m'))}
+}
+function calc(M){
+  const S=M.pts.map(toSurvey); const r={pts:S};
+  if(M.type==='dist'||M.type==='area'){let h=0,s=0;const n=S.length;const segs=M.type==='area'?n:n-1;
+    for(let i=0;i<segs;i++){const a=S[i],b=S[(i+1)%n];const dh=Math.hypot(b.e-a.e,b.n-a.n);h+=dh;s+=Math.hypot(dh,b.rl-a.rl)}r.h=h;r.s=s;
+    if(M.type==='area'){let A=0;for(let i=0;i<n;i++){const a=S[i],b=S[(i+1)%n];A+=a.e*b.n-b.e*a.n}r.area=Math.abs(A)/2}}
+  if(M.type==='height'&&S.length===2){r.dh=S[1].rl-S[0].rl;r.hd=Math.hypot(S[1].e-S[0].e,S[1].n-S[0].n)}
+  return r;
+}
+function finish(){
+  if(!cur)return; const M=cur; cur=null; $('done').hidden=true;
+  const need={point:1,dist:2,area:3,height:2}[M.type];
+  if(M.pts.length<need){discard(M);toast(M.type==='area'?'Area needs at least 3 points':'Not enough points');return}
+  M.name=NAME[M.type]+' '+M.id; marks.push(M); redraw(M); list();
+}
+function discard(M){M.objs.forEach(o=>{ov.remove(o);if(o.geometry&&o.geometry!==sph)o.geometry.dispose()});M.lbls.forEach(delLabel)}
+$('fin').onclick=finish;
+$('undo').onclick=()=>{if(!cur)return;cur.pts.pop();const o=cur.objs.filter(o=>o.isMesh&&!o.userData.fill).pop();if(o){ov.remove(o);cur.objs=cur.objs.filter(x=>x!==o)}redraw(cur);if(!cur.pts.length){discard(cur);cur=null;$('done').hidden=true}};
+$('clr').onclick=()=>{if(!marks.length)return;if(!confirm('Clear all your marks?'))return;marks.forEach(discard);marks=[];list()};
+function describe(M){const r=calc(M);const P=r.pts;
+  const pl=P.map((p,i)=>`  P${i+1}: E ${f3(p.e)}  N ${f3(p.n)}  RL ${f2(p.rl)}`).join('\n');
+  if(M.type==='point')return `E ${f3(P[0].e)}\nN ${f3(P[0].n)}\nRL ${f2(P[0].rl)} m`;
+  if(M.type==='dist')return `Length ${f2(r.h)} m (plan) · ${f2(r.s)} m (slope)\nRise ${f2(P[P.length-1].rl-P[0].rl)} m\n${pl}`;
+  if(M.type==='area')return `Area ${fmtA(r.area)} m² (${(r.area/4046.856).toFixed(3)} acre)\nPerimeter ${f2(r.h)} m\n${pl}`;
+  if(M.type==='height')return `Level difference ${r.dh>=0?'+':''}${f2(r.dh)} m over ${f2(r.hd)} m\n${pl}`;
+}
+function list(){
+  const ml=$('ml'); if(!marks.length){ml.innerHTML='<div style="color:#9fb1d1">Pick a tool below and tap on the model to mark a point, a distance or an area.</div>';return}
+  ml.innerHTML=marks.map((M,i)=>`<div class="m"><div class="h"><i style="background:${CSS[M.type]}"></i>${M.name}</div><button class="x" data-i="${i}" title="Delete">✕</button><div class="v">${describe(M)}</div><input data-n="${i}" placeholder="Add a note (e.g. house here, gate, septic tank)" value="${(M.note||'').replace(/"/g,'&quot;')}"></div>`).join('');
+}
+$('ml').addEventListener('click',e=>{const b=e.target.closest('.x');if(!b)return;const M=marks[+b.dataset.i];discard(M);marks.splice(+b.dataset.i,1);list()});
+$('ml').addEventListener('input',e=>{const t=e.target;if(t.dataset.n!=null)marks[+t.dataset.n].note=t.value});
+$('tgl').onclick=()=>$('panel').classList.toggle('show');
+
+/* ---------- send ---------- */
+function compose(){
+  const lines=[`3D model marks — ${cfg.title}`,`${cfg.place}`,`Coordinates: ${cfg.crs}`,''];
+  marks.forEach(M=>{lines.push(`■ ${M.name}${M.note?' — '+M.note:''}`);lines.push(describe(M));lines.push('')});
+  if(!marks.length)lines.push('(no marks)');
+  return lines.join('\n');
+}
+function snapshot(){renderer.render(scene,camera);const src=renderer.domElement;const s=Math.min(1,1280/Math.max(src.width,src.height));const c=document.createElement('canvas');c.width=Math.round(src.width*s);c.height=Math.round(src.height*s);const x=c.getContext('2d');x.drawImage(src,0,0,c.width,c.height);
+  // burn labels in
+  x.font='bold '+Math.round(12*s*(window.devicePixelRatio||1))+'px Poppins, sans-serif';x.textAlign='center';
+  labels.forEach(L=>{if(L.el.style.display==='none'||L.el.style.visibility==='hidden')return;const px=parseFloat(L.el.style.left)*(c.width/innerWidth),py=parseFloat(L.el.style.top)*(c.height/innerHeight)-10*s;const t=L.el.textContent;const w=x.measureText(t).width+10;x.fillStyle=getComputedStyle(L.el).backgroundColor;x.fillRect(px-w/2,py-14*s,w,18*s);x.fillStyle=getComputedStyle(L.el).color;x.fillText(t,px,py)});
+  return c.toDataURL('image/jpeg',0.72)}
+let snapData='';
+$('bSend').onclick=()=>{if(cur)finish();if(!marks.length){toast('Mark a point, distance or area first');return}
+  snapData=snapshot();$('snap').src=snapData;$('fText').value=compose();
+  try{$('fName').value=localStorage.getItem('lee3d_name')||'';$('fCode').value=QP.get('code')||localStorage.getItem('ccode')||localStorage.getItem('lee3d_code')||''}catch(e){$('fCode').value=QP.get('code')||''}
+  updWa();$('sheet').classList.add('open')};
+function fullText(){const nm=$('fName').value.trim(),ph=$('fPhone').value.trim();return (nm?`From: ${nm}${ph?' ('+ph+')':''}\n`:'')+$('fText').value}
+function updWa(){$('sWa').href='https://wa.me/'+WA+'?text='+encodeURIComponent(fullText()+'\n\n3D model: '+location.href.split('#')[0])}
+['fName','fPhone','fText'].forEach(i=>$(i).addEventListener('input',updWa));
+$('sX').onclick=()=>$('sheet').classList.remove('open');
+$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))$('sheet').classList.remove('open')});
+$('sCopy').onclick=async()=>{try{await navigator.clipboard.writeText(fullText());toast('Copied')}catch(e){toast('Copy not allowed — select the text')}};
+$('sCsv').onclick=()=>{const rows=[['mark','type','note','point','easting','northing','rl']];marks.forEach(M=>calc(M).pts.forEach((p,i)=>rows.push([M.name,M.type,(M.note||'').replace(/,/g,' '),'P'+(i+1),f3(p.e),f3(p.n),f2(p.rl)])));
+  const b=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=MID+'_3d_marks.csv';a.click()};
+$('sGo').onclick=async()=>{
+  const name=$('fName').value.trim(), code=$('fCode').value.trim().toUpperCase();
+  if(!name){toast('Please add your name');$('fName').focus();return}
+  if(!code){toast('No project code — sending on WhatsApp');updWa();window.open($('sWa').href,'_blank');return}
+  const srv=server(); if(!srv){toast('Server not set — use WhatsApp');return}
+  const b=$('sGo');b.disabled=true;b.textContent='Sending…';
+  try{localStorage.setItem('lee3d_name',name);localStorage.setItem('lee3d_code',code)}catch(e){}
+  try{const r=await fetch(srv,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'clientMsg',clientCode:code,name:name+($('fPhone').value.trim()?' ('+$('fPhone').value.trim()+')':''),text:'[3D model marks]\n'+$('fText').value,photo:snapData}),redirect:'follow'});
+    const j=await r.json(); if(!j.ok)throw new Error(j.error||'Server error'); toast('Sent to M/s Lee Enterprise ✓'); $('sheet').classList.remove('open')}
+  catch(e){toast('Could not send: '+e.message+' — try WhatsApp')} finally{b.disabled=false;b.textContent='Send to project'}
+};
+
+/* ---------- loop ---------- */
+const nsv=document.querySelector('#north svg');
+function loop(t){requestAnimationFrame(loop); if(anim)anim(t); controls.update();
+  const s=markerSize(); marks.concat(cur?[cur]:[]).forEach(M=>M.objs.forEach(o=>{if(o.isMesh&&!o.userData.fill)o.scale.setScalar(s)}));
+  nsv.style.transform='rotate('+(controls.getAzimuthalAngle()*180/Math.PI)+'deg)';
+  renderer.render(scene,camera); placeLabels()}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
