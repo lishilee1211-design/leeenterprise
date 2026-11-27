@@ -110,7 +110,7 @@ h1{font-size:20px;text-align:center;color:var(--navy)}
 <script>
 function guessUrl(){
   const h=location.host;
-  if(/github\.io$/.test(h)||(location.protocol==='https:'&&!/claude/.test(h))) return location.origin+location.pathname.replace(/card\.html$/,'');
+  if(/github\.io$/.test(h)||(location.protocol==='https:'&&!/usercontent/.test(h))) return location.origin+location.pathname.replace(/card\.html$/,'');
   return '';
 }
 function draw(u){

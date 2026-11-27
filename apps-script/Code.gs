@@ -3,12 +3,12 @@
  *  • Expense tally (Lee Enterprise + T.N Consultant)
  *  • Projects, progress updates and client messages (client portal)
  *  • Public portfolio shown on the website
- *  • AI Manager (Claude) that can add items by chat or voice
+ *  • Office Manager that can add items by chat or voice
  *
  * ONE-TIME SETUP — see SETUP-GUIDE.md:
  *  1. script.google.com → New project (or a Sheet → Extensions → Apps Script) → paste this file → Save.
  *  2. Run "setup" → allow → copy OWNER KEY and WORKER CODE from the log.
- *  3. (AI Manager) Project Settings ⚙ → Script properties → add ANTHROPIC_API_KEY.
+ *  3. (Office Manager) Project Settings ⚙ → Script properties → add ANTHROPIC_API_KEY.
  *  4. Deploy → New deployment → Web app → Execute as: Me, Access: Anyone → copy the /exec link.
  */
 
@@ -321,7 +321,7 @@ function portfolio_() {
   });
 }
 
-/* ───────────────────────── AI Manager (Claude) ───────────────────────── */
+/* ───────────────────────── Office Manager ───────────────────────── */
 
 const AI_TOOLS = [
   { name: 'add_expense', description: 'Record an expense in the tally.',

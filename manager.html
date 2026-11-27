@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>Lee Enterprise — AI Manager</title>
+<title>Lee Enterprise — Office Manager</title>
 <meta name="theme-color" content="#071a3d">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.json">
@@ -76,7 +76,7 @@ button,input,textarea,select{font-family:inherit;font-size:15px}
 <body>
 <div class="top"><div class="row">
   <div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="#0a2350" stroke-width="2"><rect x="4" y="7" width="16" height="12" rx="4"/><path d="M12 7V4M9 13h.01M15 13h.01M9.5 16h5"/></svg><i></i></div>
-  <div><b>AI MANAGER</b><small id="sub">Lee Enterprise · T.N Consultant</small></div>
+  <div><b>OFFICE MANAGER</b><small id="sub">Lee Enterprise · T.N Consultant</small></div>
   <div class="r">
     <button id="speakBtn" title="Read replies aloud"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>Voice</button>
     <button id="clearBtn" title="New chat">New</button>
@@ -127,7 +127,7 @@ setTimeout(()=>$('pinBox').children[0].focus(),100);
 const SUGS=['₹850 diesel for Poma site, paid cash by Tana','Any new client messages?','How much did we spend this month, Lee vs T.N?','Post update on Burm sports complex: layout approved by client, 30%','Create project: Boundary survey at Doimukh for Mr. Tage, show on website','Pending expenses approve kar do'];
 function render(){
   const el=$('inner');
-  el.innerHTML=(isDemo()?'<div class="demo">Demo mode — replies are samples. Add your server link and Claude API key to go live.</div>':'')+
+  el.innerHTML=(isDemo()?'<div class="demo">Demo mode — replies are samples. Add your server link and API key to go live.</div>':'')+
    (hist.length?'':`<div class="hello"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="#0a2350" stroke-width="2"><rect x="4" y="7" width="16" height="12" rx="4"/><path d="M12 7V4M9 13h.01M15 13h.01M9.5 16h5"/></svg></div>
      <h2>Namaste! I'm your office manager.</h2><p>Tell me in English, Hindi or Hinglish — I'll record expenses, create projects, post progress for clients, put work on the website and reply to client messages.</p>
      <div class="sugs">${SUGS.map(s=>`<button>${esc(s)}</button>`).join('')}</div></div>`)+

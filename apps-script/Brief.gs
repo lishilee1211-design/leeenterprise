@@ -504,7 +504,7 @@ function guessShow_(notes) {
 function showAI_(photo, notes) {
   const key = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
   const fallback = guessShow_(notes);
-  if (!key) return { ok: true, ai: false, suggestion: fallback, note: 'Smart fill used (add ANTHROPIC_API_KEY for full AI).' };
+  if (!key) return { ok: true, ai: false, suggestion: fallback, note: 'Smart fill used.' };
   const content = [];
   const m = String(photo || '').match(/^data:(image\/(?:jpeg|png|webp));base64,(.*)$/);
   if (m) content.push({ type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } });
